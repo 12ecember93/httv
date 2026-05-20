@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TV WEB FIX AUTOPLAY</title>
+    <title>TV WEB BYPASS SAFARI</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         :root { --yellow: #ffcc00; --focus-bg: rgba(255, 255, 255, 0.25); }
@@ -29,7 +29,7 @@
 
 <div id="rotation-wrapper">
     <div id="video-viewport">
-        <video id="main-video" autoplay playsinline webkit-playsinline></video>
+        <video id="main-video" autoplay muted playsinline webkit-playsinline></video>
         <div id="loading">ĐANG TẢI...</div>
         <div class="controls-overlay" id="ui-overlay">
             <div class="sidebar" id="sidebar-el"></div>
@@ -93,11 +93,11 @@ function playChannel(idx) {
     if (Hls.isSupported()) {
         hls.detachMedia(); hls.loadSource(channels[idx].url); hls.attachMedia(v);
         hls.once(Hls.Events.MANIFEST_PARSED, () => {
-            v.play().catch(e => console.log("Blocked:", e));
+            v.play().catch(e => console.log(e));
         });
     } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
         v.src = channels[idx].url; 
-        v.play().catch(e => console.log("Blocked:", e));
+        v.play().catch(e => console.log(e));
     }
 }
 
@@ -114,17 +114,28 @@ function setFocus(idx) { document.querySelectorAll('.side-item').forEach(el => e
 const el = sidebar.children[idx]; if (el) { el.classList.add('focused'); el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } }
 function clearFocus() { document.querySelectorAll('.side-item').forEach(el => el.classList.remove('focused')); }
 
+// KHI NGƯỜI DÙNG CHẠM VÀO MÀN HÌNH ĐỂ MỞ MENU -> TỰ ĐỘNG BẬT TIẾNG
 document.getElementById('video-viewport').addEventListener('click', (e) => {
+    if (v.muted) v.muted = false;
     if (overlay.contains(e.target) && e.target !== overlay) return;
     overlay.classList.contains('active') ? hideUI() : showUI();
 });
 
-// MẸO ĐÁNH LỪA TRÌNH DUYỆT: Kích hoạt play ngay lập tức khi vừa chạy script
-v.play().catch(() => {});
+// ── CON BOT TỰ ĐỘNG KHÔI PHỤC ÂM THANH CHẠY NGẦM ───────────────────
+// Cứ mỗi 500 mili-giây, nó sẽ cố gắng Unmute video mà không cần bạn phải bấm nút chọn lại kênh
+const audioEnforcer = setInterval(() => {
+    if (v && !v.paused) {
+        v.muted = false;
+        // Nếu trình duyệt đã chấp nhận mở tiếng thành công, hủy bỏ vòng lặp để đỡ tốn ram
+        if (!v.muted) {
+            clearInterval(audioEnforcer);
+        }
+    }
+}, 500);
 
 async function init() {
     try {
-        // Vừa giữ được lệnh fetch online để bồ thoải mái cập nhật kênh trên github công cộng
+        // Giữ nguyên lệnh fetch online từ GitHub theo ý bạn
         const res  = await fetch('https://raw.githubusercontent.com/12ecember93/HT-iptv/main/playlist.json');
         const data = await res.json();
         let raw = Object.values(data).flat();
