@@ -3,12 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TV WEB BYPASS SAFARI</title>
+    <title>TV WEB CHUẨN ĐẸP</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         :root { --yellow: #ffcc00; --focus-bg: rgba(255, 255, 255, 0.25); }
         * { box-sizing: border-box; }
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; color: #fff; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        /* GIAO DIỆN MÀN HÌNH CHỜ ĐỂ BẤY SAFARI */
+        #splash-screen {
+            position: fixed; inset: 0; background: #0a0a0a; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        #play-btn {
+            padding: 16px 36px; font-size: 18px; font-weight: bold; color: #000;
+            background: var(--yellow); border: none; border-radius: 30px;
+            cursor: pointer; box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
+            transition: transform 0.2s;
+        }
+        #play-btn:active { transform: scale(0.95); }
+
         #rotation-wrapper { position: absolute; background: #000; top: 50%; left: 50%; transform: translate(-50%, -50%); display: block; overflow: hidden; }
         #video-viewport { width: 100%; height: 100%; position: relative; }
         video { width: 100%; height: 100%; object-fit: contain; display: block; }
@@ -27,9 +41,14 @@
 </head>
 <body>
 
+<div id="splash-screen">
+    <h2 style="margin-bottom: 20px; letter-spacing: 2px;">HT TV PRO</h2>
+    <button id="play-btn">BẤM ĐỂ XEM TV</button>
+</div>
+
 <div id="rotation-wrapper">
     <div id="video-viewport">
-        <video id="main-video" autoplay muted playsinline webkit-playsinline></video>
+        <video id="main-video" autoplay playsinline webkit-playsinline></video>
         <div id="loading">ĐANG TẢI...</div>
         <div class="controls-overlay" id="ui-overlay">
             <div class="sidebar" id="sidebar-el"></div>
@@ -114,28 +133,26 @@ function setFocus(idx) { document.querySelectorAll('.side-item').forEach(el => e
 const el = sidebar.children[idx]; if (el) { el.classList.add('focused'); el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } }
 function clearFocus() { document.querySelectorAll('.side-item').forEach(el => el.classList.remove('focused')); }
 
-// KHI NGƯỜI DÙNG CHẠM VÀO MÀN HÌNH ĐỂ MỞ MENU -> TỰ ĐỘNG BẬT TIẾNG
 document.getElementById('video-viewport').addEventListener('click', (e) => {
-    if (v.muted) v.muted = false;
     if (overlay.contains(e.target) && e.target !== overlay) return;
     overlay.classList.contains('active') ? hideUI() : showUI();
 });
 
-// ── CON BOT TỰ ĐỘNG KHÔI PHỤC ÂM THANH CHẠY NGẦM ───────────────────
-// Cứ mỗi 500 mili-giây, nó sẽ cố gắng Unmute video mà không cần bạn phải bấm nút chọn lại kênh
-const audioEnforcer = setInterval(() => {
-    if (v && !v.paused) {
-        v.muted = false;
-        // Nếu trình duyệt đã chấp nhận mở tiếng thành công, hủy bỏ vòng lặp để đỡ tốn ram
-        if (!v.muted) {
-            clearInterval(audioEnforcer);
-        }
-    }
-}, 500);
+function tryFullscreen() {
+    const el = document.documentElement;
+    if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+}
+
+// SỰ KIỆN KÍCH HOẠT CHÍNH: BẤM NÚT ĐỂ VÀO APP VÀ BẺ GÃY KHÓA AUTOPLAY CỦA SAFARI
+document.getElementById('play-btn').addEventListener('click', () => {
+    document.getElementById('splash-screen').style.display = 'none';
+    tryFullscreen();
+    init(); // Sau khi bấm mới cho phép gọi hàm fetch online và chạy video có tiếng
+});
 
 async function init() {
     try {
-        // Giữ nguyên lệnh fetch online từ GitHub theo ý bạn
         const res  = await fetch('https://raw.githubusercontent.com/12ecember93/HT-iptv/main/playlist.json');
         const data = await res.json();
         let raw = Object.values(data).flat();
@@ -157,8 +174,6 @@ async function init() {
         forceLandscape();
     } catch (err) { loader.style.display = 'block'; loader.innerText = 'LỖI DANH SÁCH'; }
 }
-
-init();
 </script>
 </body>
 </html>
