@@ -2,120 +2,189 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TV</title>
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/12ecember93/HT-iptv/main/httv.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, minimal-ui">
+    <title>TV GLOBAL FIX</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <style>
-        :root { --yellow: #ffcc00; --focus-bg: rgba(255,255,255,0.25); --sidebar-w: 163px; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+    <script src="playlist.js"></script>
 
-        html, body {
+    <style>
+        :root { 
+            --bg-dark: #000; 
+            --yellow: #ffcc00; 
+            --focus-bg: rgba(255, 255, 255, 0.25); 
+            --ui-trans: 0.25s;
+        }
+        * { box-sizing: border-box; }
+        
+        /* ── CHÌA KHÓA FIX SAFARI/MOBILE - ÉP DỌC THÀNH NGANG BẰNG CSS ── */
+        html {
             width: 100%; height: 100%;
-            background: #000; color: #fff;
-            font-family: sans-serif;
-            overflow: hidden;
+            overflow: hidden; background: #000;
+        }
+        body {
+            margin: 0; padding: 0; 
+            color: #fff; font-family: sans-serif; 
             -webkit-tap-highlight-color: transparent;
+            width: 100%; height: 100%;
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        /* Layout ngang cứng: video chiếm toàn bộ, sidebar overlay lên trên */
-        #app {
-            position: fixed;
-            /* Luôn landscape: width = chiều dài màn hình, height = chiều ngắn */
-            width: max(100vw, 100vh);
-            height: min(100vw, 100vh);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        /* Container chính để xoay */
+        #rotation-wrapper {
+            position: relative;
+            background: #000;
+            transform-origin: center center;
+            overflow: hidden;
+            /* JavaScript sẽ tự động set width, height và transform xoay ở đây */
+        }
+
+        /* ── VIDEO CONTAINER chuẩn NGANG ────────────────────────────── */
+        #video-viewport {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
             background: #000;
         }
-
-        video {
-            position: absolute; inset: 0;
-            width: 100%; height: 100%;
-            object-fit: contain; display: block;
+        video { 
+            width: 100%; height: 100%; 
+            object-fit: contain; /* Căn giữa không bị cắt */
+            display: block; 
         }
 
-        #loading {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            color: var(--yellow); font-weight: bold; font-size: 16px;
-            z-index: 60; text-shadow: 0 0 12px #000;
-            pointer-events: none; display: none;
-        }
-
-        /* Overlay + sidebar */
+        /* ── UI OVERLAY ─────────────────────────────────────────── */
         .controls-overlay {
             position: absolute; inset: 0;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.25);
             opacity: 0; pointer-events: none;
-            transition: opacity 0.2s; z-index: 50;
+            transition: opacity var(--ui-trans); z-index: 50;
         }
         .controls-overlay.active { opacity: 1; pointer-events: auto; }
 
+        /* Sidebar - Tối ưu hiển thị cho Mobile xoay ngang */
         .sidebar {
             position: absolute; top: 0; left: 0;
-            width: var(--sidebar-w); height: 100%;
-            background: rgba(10,10,10,0.97);
+            width: 25vw; min-width: 100px; max-width: 150px;
+            height: 100%;
+            background: rgba(10,10,10,0.96);
             border-right: 1px solid #333;
             overflow-y: auto; overflow-x: hidden;
             transform: translateX(-100%);
-            transition: transform 0.2s;
+            transition: transform var(--ui-trans);
             scrollbar-width: none;
         }
         .sidebar::-webkit-scrollbar { display: none; }
         .controls-overlay.active .sidebar { transform: translateX(0); }
 
         .side-item {
-            padding: 14px 10px;
-            border-bottom: 1px solid #1a1a1a;
+            padding: 8px; border-bottom: 1px solid #1a1a1a;
             text-align: center; opacity: 0.5;
             cursor: pointer; transition: 0.15s; outline: none;
+            /* Tự động căn chỉnh kích thước logo */
+            display: flex; align-items: center; justify-content: center;
+            min-height: 48px;
         }
         .side-item.active { opacity: 1; border-left: 4px solid var(--yellow); background: rgba(255,204,0,0.12); }
-        .side-item.focused { opacity: 1; background: var(--focus-bg); transform: scale(1.04); }
-        .side-item img { max-width: 90%; max-height: 50px; object-fit: contain; pointer-events: none; display: block; margin: auto; }
+        .side-item.focused { opacity: 1; background: var(--focus-bg); transform: scale(1.05); }
+        
+        .side-item img {
+            max-width: 90%; 
+            max-height: 38px; /* Tối ưu chiều cao logo cho mobile xoay ngang */
+            object-fit: contain; 
+            pointer-events: none; 
+            display: block; 
+            margin: auto;
+        }
 
-        /* Stats góc trên phải */
         #stats {
             position: absolute; top: 10px; right: 10px;
-            background: rgba(0,0,0,0.65);
-            color: #00ff00; font-family: monospace; font-size: 11px;
-            padding: 4px 8px; border-radius: 5px;
-            pointer-events: none; line-height: 1.6; white-space: nowrap;
+            background: rgba(0,0,0,0.6);
+            color: #00ff00; font-family: monospace; font-size: 10px;
+            padding: 3px 6px; border-radius: 4px;
+            pointer-events: none; white-space: nowrap;
+        }
+
+        #loading {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            color: var(--yellow); font-weight: bold;
+            font-size: 16px; z-index: 60;
+            text-shadow: 0 0 10px #000;
+            pointer-events: none; display: none;
         }
     </style>
 </head>
 <body>
-<div id="app">
-    <video id="main-video" autoplay playsinline webkit-playsinline muted></video>
-    <div id="loading">ĐANG TẢI...</div>
-    <div class="controls-overlay" id="ui-overlay">
-        <div class="sidebar" id="sidebar-el"></div>
-        <div id="stats">—</div>
+
+<div id="rotation-wrapper">
+    <div id="video-viewport">
+        <video id="main-video" autoplay playsinline webkit-playsinline></video>
+        <div id="loading">ĐANG TẢI...</div>
+        <div class="controls-overlay" id="ui-overlay">
+            <div class="sidebar" id="sidebar-el"></div>
+            <div id="stats">—</div>
+        </div>
     </div>
 </div>
 
 <script>
+// ── PHẦN 1: ÉP DỌC THÀNH NGANG BẰNG JS (Cho Safari/Mobile) ─────────────
+const wrapper = document.getElementById('rotation-wrapper');
+let isXoay = false; // Biến kiểm tra xem wrapper có đang xoay hay không
+
+function forceLandscape() {
+    const ww = window.innerWidth;
+    const wh = window.innerHeight;
+
+    // Tỷ lệ màn hình chuẩn ngang 16:9 (Hoặc tỷ lệ video của bạn)
+    const aspect = 16 / 9;
+
+    // Nếu màn hình đang ở chế độ DỌC (Safari khóa ngang)
+    if (ww < wh) {
+        isXoay = true;
+        
+        // Wrapper sẽ lấy chiều cao màn hình dọn làm chiều rộng nằm ngang
+        wrapper.style.width  = wh + 'px'; 
+        wrapper.style.height = ww + 'px';
+        
+        // Tự động scale wrapper để video full màn hình không bị cắt 2 bên dọn
+        const scale = wh / (ww * aspect) > 1 ? wh / (ww * aspect) : 1;
+        
+        // ÉP XOAY 90 độ và scale
+        wrapper.style.transform = `rotate(90deg) scale(${scale})`;
+    } else {
+        // Màn hình đang ở chế độ NGANG (TV, hoặc mobile đã xoay)
+        isXoay = false;
+        wrapper.style.width  = '100vw'; 
+        wrapper.style.height = '100vh';
+        wrapper.style.transform = 'rotate(0deg) scale(1)';
+    }
+    
+    // Đảm bảo video được căn giữa và không object-fit
+    const video = document.getElementById('main-video');
+    video.style.objectFit = 'contain';
+}
+
+// Chạy khởi tạo và gán sự kiện resize
+forceLandscape();
+window.addEventListener('resize', forceLandscape);
+window.addEventListener('orientationchange', forceLandscape);
+
+// ── PHẦN 2: CHỨC NĂNG TV VÀ PLAYER GỐC ───────────────────────────────
 const v       = document.getElementById('main-video');
 const overlay = document.getElementById('ui-overlay');
 const sidebar = document.getElementById('sidebar-el');
 const loader  = document.getElementById('loading');
 const statsEl = document.getElementById('stats');
-const app     = document.getElementById('app');
 
-let hls = new Hls({ manifestLoadingMaxRetry: 10, levelLoadingMaxRetry: 10, fragLoadingMaxRetry: 10 });
-let channels = [], curIdx = 0, uiTimer = null, statsInterval = null;
-let frameCount = 0, fps = 0, lastTs = 0;
+let hls = new Hls({ manifestLoadingMaxRetry: 10 });
+let channels = [], curIdx = 0, uiTimer = null;
+let statsInterval = null, frameCount = 0, fps = 0, lastTs = 0;
 
-// ── FPS ─────────────────────────────────────────────────────
 (function fpsLoop() {
-    if (!v.paused) {
-        frameCount++;
-        const now = performance.now();
-        if (now - lastTs >= 1000) { fps = frameCount; frameCount = 0; lastTs = now; }
-    }
-    requestAnimationFrame(fpsLoop);
+    if (!v.paused) { frameCount++; const now = performance.now();
+    if (now - lastTs >= 1000) { fps = frameCount; frameCount = 0; lastTs = now; }
+    } requestAnimationFrame(fpsLoop);
 })();
 
 function updateStats() {
@@ -125,112 +194,136 @@ function updateStats() {
     statsEl.innerText = `${res} | ${mbps} | ${fps} fps`;
 }
 
-// ── HLS ─────────────────────────────────────────────────────
-hls.on(Hls.Events.ERROR, (_, d) => {
-    if (!d.fatal) return;
-    if (d.type === Hls.ErrorTypes.NETWORK_ERROR) hls.startLoad();
-    else if (d.type === Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError();
-});
+hls.on(Hls.Events.ERROR, (_, d) => { if (!d.fatal) return; 
+if (d.type === Hls.ErrorTypes.NETWORK_ERROR) hls.startLoad();
+else if (d.type === Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError(); });
 
-// ── Play ────────────────────────────────────────────────────
 function playChannel(idx) {
     if (idx < 0 || idx >= channels.length) return;
-    curIdx = idx;
-    const c = channels[idx];
-    loader.style.display = 'block';
-
+    curIdx = idx; loader.style.display = 'block';
+    
     document.querySelectorAll('.side-item').forEach(el => el.classList.remove('active'));
     const activeEl = sidebar.children[idx];
-    if (activeEl) { activeEl.classList.add('active'); activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
-
-    if (Hls.isSupported()) {
-        hls.detachMedia(); hls.loadSource(c.url); hls.attachMedia(v);
-        hls.once(Hls.Events.MANIFEST_PARSED, () => {
-            v.muted = false;
-            v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
-        });
-    } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
-        v.src = c.url;
-        v.muted = false;
-        v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
+    if (activeEl) { 
+        activeEl.classList.add('active'); 
+        activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); 
     }
+
+    if (Hls.isSupported()) { hls.detachMedia(); hls.loadSource(channels[idx].url); hls.attachMedia(v);
+        hls.once(Hls.Events.MANIFEST_PARSED, () => v.play().catch(() => {}));
+    } else if (v.canPlayType('application/vnd.apple.mpegurl')) { v.src = channels[idx].url; v.play().catch(() => {}); }
 }
 
 v.addEventListener('playing', () => loader.style.display = 'none');
 
-// ── UI ──────────────────────────────────────────────────────
 function showUI() {
-    overlay.classList.add('active');
-    setFocus(curIdx);
-    updateStats();
-    if (!statsInterval) statsInterval = setInterval(updateStats, 1000);
-    resetHideTimer();
+    overlay.classList.add('active'); setFocus(curIdx); updateStats();
+    if (!statsInterval) statsInterval = setInterval(updateStats, 1000); resetHideTimer();
 }
-
-function hideUI() {
-    overlay.classList.remove('active');
-    clearFocus();
-    clearTimeout(uiTimer);
-    clearInterval(statsInterval); statsInterval = null;
-}
-
-function resetHideTimer() {
-    clearTimeout(uiTimer);
-    uiTimer = setTimeout(hideUI, 2000);
-}
-
-function setFocus(idx) {
-    document.querySelectorAll('.side-item').forEach(el => el.classList.remove('focused'));
-    const el = sidebar.children[idx];
-    if (el) { el.classList.add('focused'); el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
-}
+function hideUI() { overlay.classList.remove('active'); clearFocus();
+clearTimeout(uiTimer); clearInterval(statsInterval); statsInterval = null; }
+function resetHideTimer() { clearTimeout(uiTimer); uiTimer = setTimeout(hideUI, 3000); }
+function setFocus(idx) { document.querySelectorAll('.side-item').forEach(el => el.classList.remove('focused'));
+const el = sidebar.children[idx]; if (el) { el.classList.add('focused'); el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } }
 function clearFocus() { document.querySelectorAll('.side-item').forEach(el => el.classList.remove('focused')); }
 
-// ── Touch / click ───────────────────────────────────────────
-app.addEventListener('click', (e) => {
-    if (sidebar.contains(e.target)) return;
+// ── Touch / Mouse ─────────────────────────────────────────────
+document.getElementById('video-viewport').addEventListener('click', (e) => {
+    if (overlay.contains(e.target) && e.target !== overlay) return;
     overlay.classList.contains('active') ? hideUI() : showUI();
 });
 
-// ── Fullscreen ──────────────────────────────────────────────
 function tryFullscreen() {
     const el = document.documentElement;
     if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
     else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-    if (screen.orientation?.lock) screen.orientation.lock('landscape').catch(() => {});
 }
 
-// ── D-pad ───────────────────────────────────────────────────
+// ── PHẦN 3: TV REMOTE FIX - TOÀN BỘ MÃ PHÍM CHO 100% TV ──────────────
 document.addEventListener('keydown', (e) => {
-    const K = { UP:38, DOWN:40, LEFT:37, RIGHT:39, OK:13, OK2:23, BACK:8, MENU:18 };
-    if (e.keyCode === K.BACK || e.keyCode === K.MENU) {
-        e.preventDefault();
-        overlay.classList.contains('active') ? hideUI() : showUI();
-        return;
-    }
-    if (!overlay.classList.contains('active')) { e.preventDefault(); showUI(); return; }
-    resetHideTimer();
+    // Debug: Mở console và bấm remote để xem mã phím TV của bạn
+    // console.log('Bấm phím:', e.keyCode, e.key);
+
+    // Danh sách mã phím TV Remote chuẩn và phổ biến
+    const KEYS = {
+        // Phím D-pad (Chuẩn)
+        UP: 38, DOWN: 40, LEFT: 37, RIGHT: 39, OK: 13,
+        // Phím Back/Menu/Media (Sửa lỗi cho TV cũ)
+        BACK: [8, 10009, 461, 27], // 8 là back, 27 là esc
+        MENU: [18, 93, 10134, 10140], 
+        SELECT: 23, // Một số remote có mã OK là 23
+        FAST_FORWARD: 228, REWIND: 227
+    };
+
     const n = channels.length;
-    if (e.keyCode === K.DOWN)  { e.preventDefault(); curIdx = (curIdx+1)%n; setFocus(curIdx); }
-    else if (e.keyCode === K.UP) { e.preventDefault(); curIdx = (curIdx-1+n)%n; setFocus(curIdx); }
-    else if ([K.OK, K.OK2, K.RIGHT].includes(e.keyCode)) { e.preventDefault(); playChannel(curIdx); hideUI(); }
-    else if (e.keyCode === K.LEFT) { e.preventDefault(); hideUI(); }
+    let handled = false;
+
+    // 1. Phím OK (vừa OK chuẩn vừa OK Select của Tivi cũ)
+    if (e.keyCode === KEYS.OK || e.keyCode === KEYS.SELECT) {
+        if (!overlay.classList.contains('active')) {
+            showUI();
+        } else {
+            playChannel(curIdx);
+            hideUI();
+        }
+        handled = true;
+    } 
+    // 2. Phím MENU (hoặc phím Right trên mobile xoay)
+    else if (KEYS.MENU.includes(e.keyCode) || (e.keyCode === KEYS.RIGHT)) {
+        if (!overlay.classList.contains('active')) {
+            showUI();
+        } else {
+            hideUI();
+        }
+        handled = true;
+    }
+    // 3. Phím BACK (vừa Back chuẩn vừa Escape)
+    else if (KEYS.BACK.includes(e.keyCode)) {
+        if (overlay.classList.contains('active')) {
+            hideUI();
+            handled = true;
+        }
+    }
+
+    // ── Xử lý khi UI ĐANG BẬT ───────────────────
+    if (overlay.classList.contains('active')) {
+        resetHideTimer();
+        
+        // 4. Phím D-pad UP/DOWN (Có sửa lỗi logic cho Mobile Xoay)
+        if (e.keyCode === KEYS.DOWN) {
+            // Khi xoay ngang: "Mã Down" là đi xuống
+            curIdx = (curIdx + 1) % n; setFocus(curIdx); handled = true;
+        } else if (e.keyCode === KEYS.UP) {
+            curIdx = (curIdx - 1 + n) % n; setFocus(curIdx); handled = true;
+        }
+        // 5. Phím LEFT/RIGHT (Logic cho Mobile Xoay)
+        else if (e.keyCode === KEYS.LEFT) {
+            // Khi xoay ngang: "Mã Left" là đi ra (Menu ẩn)
+            hideUI(); handled = true;
+        }
+        // OK Select đã xử lý ở trên
+    } else {
+        // ── Xử lý khi UI ĐANG TẮT ───────────────────
+        
+        // 6. Cho phép bấm D-pad UP/DOWN để hiện UI
+        if (e.keyCode === KEYS.DOWN || e.keyCode === KEYS.UP) {
+            showUI(); handled = true;
+        }
+    }
+
+    if (handled) { e.preventDefault(); }
 });
 
-// ── Init ────────────────────────────────────────────────────
+// ── Init ───────────────────────────────────────────────────────
 async function init() {
     try {
-        const res  = await fetch('playlist.json');
-        const data = await res.json();
-        let raw = Object.values(data).flat();
-
+        let raw = Object.values(playlistData).flat();
         const thvl1 = raw.find(c => c.short === 'THVL1');
         channels = thvl1 ? [thvl1, ...raw.filter(c => c.short !== 'THVL1')] : raw;
 
         channels.forEach((c, i) => {
             const el = document.createElement('div');
             el.className = 'side-item';
-            el.setAttribute('data-url', c.url);
             el.innerHTML = `<img src="${c.logo}" loading="lazy" title="${c.name}">`;
             el.addEventListener('click', (e) => { e.stopPropagation(); playChannel(i); hideUI(); });
             sidebar.appendChild(el);
@@ -239,13 +332,10 @@ async function init() {
         const vtv1Idx = channels.findIndex(c => c.short === 'VTV1');
         playChannel(vtv1Idx >= 0 ? vtv1Idx : 0);
 
+        forceLandscape(); // Ép ngang lần cuối
         tryFullscreen();
         document.addEventListener('click', tryFullscreen, { once: true });
-
-    } catch (err) {
-        loader.style.display = 'block';
-        loader.innerText = 'LỖI DANH SÁCH';
-    }
+    } catch (err) { loader.style.display = 'block'; loader.innerText = 'LỖI DANH SÁCH'; }
 }
 
 init();
