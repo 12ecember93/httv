@@ -3,73 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TV AUTO FIXED</title>
+    <title>TV</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/12ecember93/HT-iptv/main/httv.png">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        :root { --yellow: #ffcc00; --focus-bg: rgba(255, 255, 255, 0.25); }
-        * { box-sizing: border-box; }
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; color: #fff; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
-        #rotation-wrapper { position: absolute; background: #000; top: 50%; left: 50%; transform: translate(-50%, -50%); display: block; overflow: hidden; }
-        #video-viewport { width: 100%; height: 100%; position: relative; }
-        video { width: 100%; height: 100%; object-fit: contain; display: block; }
-        .controls-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.25); opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 50; }
+        :root { --yellow: #ffcc00; --focus-bg: rgba(255,255,255,0.25); --sidebar-w: 163px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            width: 100%; height: 100%;
+            background: #000; color: #fff;
+            font-family: sans-serif;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* KHUNG APP ÉP XOAY NGANG TUYỆT ĐỐI */
+        #app {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #000;
+            overflow: hidden;
+        }
+
+        video {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: contain; display: block;
+        }
+
+        #loading {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--yellow); font-weight: bold; font-size: 16px;
+            z-index: 60; text-shadow: 0 0 12px #000;
+            pointer-events: none; display: none;
+        }
+
+        .controls-overlay {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.2);
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.2s; z-index: 50;
+        }
         .controls-overlay.active { opacity: 1; pointer-events: auto; }
-        .sidebar { position: absolute; top: 0; left: 0; width: 140px; height: 100%; background: rgba(10,10,10,0.96); border-right: 1px solid #333; overflow-y: auto; overflow-x: hidden; transform: translateX(-100%); transition: transform 0.2s; scrollbar-width: none; }
+
+        .sidebar {
+            position: absolute; top: 0; left: 0;
+            width: var(--sidebar-w); height: 100%;
+            background: rgba(10,10,10,0.97);
+            border-right: 1px solid #333;
+            overflow-y: auto; overflow-x: hidden;
+            transform: translateX(-100%);
+            transition: transform 0.2s;
+            scrollbar-width: none;
+        }
         .sidebar::-webkit-scrollbar { display: none; }
         .controls-overlay.active .sidebar { transform: translateX(0); }
-        .side-item { padding: 12px 8px; border-bottom: 1px solid #1a1a1a; text-align: center; opacity: 0.5; cursor: pointer; transition: 0.15s; outline: none; display: flex; align-items: center; justify-content: center; min-height: 50px; }
+
+        .side-item {
+            padding: 14px 10px;
+            border-bottom: 1px solid #1a1a1a;
+            text-align: center; opacity: 0.5;
+            cursor: pointer; transition: 0.15s; outline: none;
+        }
         .side-item.active { opacity: 1; border-left: 4px solid var(--yellow); background: rgba(255,204,0,0.12); }
         .side-item.focused { opacity: 1; background: var(--focus-bg); transform: scale(1.04); }
-        .side-item img { max-width: 90%; max-height: 40px; object-fit: contain; pointer-events: none; }
-        #stats { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #00ff00; font-family: monospace; font-size: 11px; padding: 4px 8px; border-radius: 4px; pointer-events: none; }
-        #loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: var(--yellow); font-weight: bold; font-size: 16px; z-index: 60; text-shadow: 0 0 10px #000; pointer-events: none; display: block; }
+        .side-item img { max-width: 90%; max-height: 50px; object-fit: contain; pointer-events: none; display: block; margin: auto; }
+
+        #stats {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(0,0,0,0.65);
+            color: #00ff00; font-family: monospace; font-size: 11px;
+            padding: 4px 8px; border-radius: 5px;
+            pointer-events: none; line-height: 1.6; white-space: nowrap;
+        }
     </style>
 </head>
 <body>
-
-<div id="rotation-wrapper">
-    <div id="video-viewport">
-        <video id="main-video" autoplay playsinline webkit-playsinline></video>
-        <div id="loading">ĐANG TẢI DANH SÁCH...</div>
-        <div class="controls-overlay" id="ui-overlay">
-            <div class="sidebar" id="sidebar-el"></div>
-            <div id="stats">—</div>
-        </div>
+<div id="app">
+    <video id="main-video" autoplay playsinline webkit-playsinline></video>
+    <div id="loading">ĐANG TẢI...</div>
+    <div class="controls-overlay" id="ui-overlay">
+        <div class="sidebar" id="sidebar-el"></div>
+        <div id="stats">—</div>
     </div>
 </div>
 
 <script>
-const wrapper = document.getElementById('rotation-wrapper');
+const v       = document.getElementById('main-video');
+const overlay = document.getElementById('ui-overlay');
+const sidebar = document.getElementById('sidebar-el');
+const loader  = document.getElementById('loading');
+const statsEl = document.getElementById('stats');
+const app     = document.getElementById('app');
 
+let hls = new Hls({ manifestLoadingMaxRetry: 10, levelLoadingMaxRetry: 10, fragLoadingMaxRetry: 10 });
+let channels = [], curIdx = 0, uiTimer = null, statsInterval = null;
+let frameCount = 0, fps = 0, lastTs = 0;
+
+// LINK KÊNH MẶC ĐỊNH ĐỂ PHÁT NGAY LẬP TỨC KHI MỞ WEB
+const DEFAULT_URL = "https://060524.com/vtv1/index.m3u8";
+
+// ── TỰ ĐỘNG ÉP XOAY NGANG TOÀN MÀN HÌNH BẤT CHẤP KHÓA XOAY ──────────
 function forceLandscape() {
-    const w = window.innerWidth; const h = window.innerHeight;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
     if (w < h) {
-        wrapper.style.width  = h + 'px'; wrapper.style.height = w + 'px';
-        wrapper.style.transform = 'translate(-50%, -50%) rotate(90deg)';
+        // Nếu điện thoại cầm dọc: Đảo kích thước và xoay 90 độ
+        app.style.width = h + 'px';
+        app.style.height = w + 'px';
+        app.style.transform = 'translate(-50%, -50%) rotate(90deg)';
     } else {
-        wrapper.style.width  = '100%'; wrapper.style.height = '100%';
-        wrapper.style.transform = 'translate(-50%, -50%) rotate(0deg)';
+        // Nếu màn hình đã nằm ngang sẵn (TV/PC/Điện thoại nằm ngang)
+        app.style.width = '100vw';
+        app.style.height = '100vh';
+        app.style.transform = 'translate(-50%, -50%) rotate(0deg)';
     }
 }
 forceLandscape();
 window.addEventListener('resize', forceLandscape);
 window.addEventListener('orientationchange', forceLandscape);
 
-// ── PLAYER ENGINE ───────────────────────────────────────────────────
-const v       = document.getElementById('main-video');
-const overlay = document.getElementById('ui-overlay');
-const sidebar = document.getElementById('sidebar-el');
-const loader  = document.getElementById('loading');
-const statsEl = document.getElementById('stats');
-
-let hls = new Hls({ manifestLoadingMaxRetry: 10 });
-let channels = [], curIdx = 0, uiTimer = null;
-let statsInterval = null, frameCount = 0, fps = 0, lastTs = 0;
-
+// ── FPS ─────────────────────────────────────────────────────
 (function fpsLoop() {
-    if (!v.paused) { frameCount++; const now = performance.now();
-    if (now - lastTs >= 1000) { fps = frameCount; frameCount = 0; lastTs = now; }
-    } requestAnimationFrame(fpsLoop);
+    if (!v.paused) {
+        frameCount++;
+        const now = performance.now();
+        if (now - lastTs >= 1000) { fps = frameCount; frameCount = 0; lastTs = now; }
+    }
+    requestAnimationFrame(fpsLoop);
 })();
 
 function updateStats() {
@@ -79,122 +144,144 @@ function updateStats() {
     statsEl.innerText = `${res} | ${mbps} | ${fps} fps`;
 }
 
-function playChannel(idx) {
-    if (!channels || channels.length === 0 || idx < 0 || idx >= channels.length) {
-        loader.innerText = 'LỖI ĐƯỜNG TRUYỀN KÊNH';
-        return;
-    }
-    
-    curIdx = idx; 
+// ── HLS ERROR RECOVERY ──────────────────────────────────────
+hls.on(Hls.Events.ERROR, (_, d) => {
+    if (!d.fatal) return;
+    if (d.type === Hls.ErrorTypes.NETWORK_ERROR) hls.startLoad();
+    else if (d.type === Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError();
+});
+
+// ── LUỒNG PHÁT TRỰC TIẾP TỐI ƯU SIÊU TỐC ─────────────────────
+function directPlay(url) {
     loader.style.display = 'block';
-    loader.innerText = 'ĐANG TẢI KÊNH...';
-    
-    document.querySelectorAll('.side-item').forEach(el => el.classList.remove('active'));
-    const activeEl = sidebar.children[idx];
-    if (activeEl) { 
-        activeEl.classList.add('active'); 
-        activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); 
-    }
-
-    v.muted = false;
-
     if (Hls.isSupported()) {
-        hls.detachMedia(); 
-        hls.loadSource(channels[idx].url); 
-        hls.attachMedia(v);
+        hls.detachMedia(); hls.loadSource(url); hls.attachMedia(v);
         hls.once(Hls.Events.MANIFEST_PARSED, () => {
             v.play().catch(() => {
-                // Nếu Chrome/Android chặn autoplay có tiếng, chuyển sang muted để chạy được hình rồi tính sau
-                v.muted = true;
-                v.play().catch(e => console.log('Autoplay blocked:', e));
+                // Nếu trình duyệt mobile chặn tiếng, ép câm phát trước để không bị đứng hình
+                v.muted = true; v.play().catch(() => {});
             });
         });
     } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
-        v.src = channels[idx].url; 
+        v.src = url;
         v.play().catch(() => {
-            v.muted = true;
-            v.play().catch(e => console.log('Autoplay blocked:', e));
+            v.muted = true; v.play().catch(() => {});
         });
     }
+}
+
+function playChannel(idx) {
+    if (idx < 0 || idx >= channels.length) return;
+    curIdx = idx;
+    loader.style.display = 'block';
+
+    document.querySelectorAll('.side-item').forEach(el => el.classList.remove('active'));
+    const activeEl = sidebar.children[idx];
+    if (activeEl) { activeEl.classList.add('active'); activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+
+    directPlay(channels[idx].url);
 }
 
 v.addEventListener('playing', () => loader.style.display = 'none');
 
+// ── UI OVERLAY ──────────────────────────────────────────────
 function showUI() {
-    overlay.classList.add('active'); setFocus(curIdx); updateStats();
-    if (!statsInterval) statsInterval = setInterval(updateStats, 1000); resetHideTimer();
+    overlay.classList.add('active');
+    setFocus(curIdx);
+    updateStats();
+    if (!statsInterval) statsInterval = setInterval(updateStats, 1000);
+    resetHideTimer();
 }
-function hideUI() { overlay.classList.remove('active'); clearFocus();
-clearTimeout(uiTimer); clearInterval(statsInterval); statsInterval = null; }
-function resetHideTimer() { clearTimeout(uiTimer); uiTimer = setTimeout(hideUI, 3000); }
-function setFocus(idx) { document.querySelectorAll('.side-item').forEach(el => el.classList.remove('focused'));
-const el = sidebar.children[idx]; if (el) { el.classList.add('focused'); el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } }
+
+function hideUI() {
+    overlay.classList.remove('active');
+    clearFocus();
+    clearTimeout(uiTimer);
+    clearInterval(statsInterval); statsInterval = null;
+}
+
+function resetHideTimer() {
+    clearTimeout(uiTimer);
+    uiTimer = setTimeout(hideUI, 2000);
+}
+
+function setFocus(idx) {
+    document.querySelectorAll('.side-item').forEach(el => el.classList.remove('focused'));
+    const el = sidebar.children[idx];
+    if (el) { el.classList.add('focused'); el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+}
 function clearFocus() { document.querySelectorAll('.side-item').forEach(el => el.classList.remove('focused')); }
 
-document.getElementById('video-viewport').addEventListener('click', (e) => {
-    // Nếu chạm màn hình mà đang bị câm (do chính sách bảo mật), tự động mở tiếng lại
-    if (v.muted) v.muted = false;
-    if (overlay.contains(e.target) && e.target !== overlay) return;
+// ── CLICK/TOUCH TO UNMUTE AND SHOW UI ───────────────────────
+app.addEventListener('click', (e) => {
+    if (v.muted) v.muted = false; // Chạm vào bất kỳ vị trí nào cũng sẽ tự mở tiếng nếu bị trình duyệt tắt
+    if (sidebar.contains(e.target)) return;
     overlay.classList.contains('active') ? hideUI() : showUI();
 });
 
-// REMOTE TV COMDETE FIX
+// ── FULLSCREEN ENGINE ───────────────────────────────────────
+function tryFullscreen() {
+    const el = document.documentElement;
+    if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    if (screen.orientation?.lock) screen.orientation.lock('landscape').catch(() => {});
+}
+
+// ── REMOTE D-PAD / KEYBOARD ─────────────────────────────────
 document.addEventListener('keydown', (e) => {
     if (v.muted) v.muted = false;
-    const KEYS = { UP: 38, DOWN: 40, LEFT: 37, RIGHT: 39, OK: 13, BACK: [8, 10009, 461, 27], MENU: [18, 93, 10134, 10140], SELECT: 23 };
-    const n = channels.length;
-    let handled = false;
-
-    if (e.keyCode === KEYS.OK || e.keyCode === KEYS.SELECT) {
-        if (!overlay.classList.contains('active')) showUI();
-        else { playChannel(curIdx); hideUI(); }
-        handled = true;
-    } else if (KEYS.MENU.includes(e.keyCode) || e.keyCode === KEYS.RIGHT) {
+    const K = { UP:38, DOWN:40, LEFT:37, RIGHT:39, OK:13, OK2:23, BACK:8, MENU:18 };
+    if (e.keyCode === K.BACK || e.keyCode === K.MENU) {
+        e.preventDefault();
         overlay.classList.contains('active') ? hideUI() : showUI();
-        handled = true;
-    } else if (KEYS.BACK.includes(e.keyCode)) {
-        if (overlay.classList.contains('active')) { hideUI(); handled = true; }
+        return;
     }
-
-    if (overlay.classList.contains('active')) {
-        resetHideTimer();
-        if (e.keyCode === KEYS.DOWN) { curIdx = (curIdx + 1) % n; setFocus(curIdx); handled = true; }
-        else if (e.keyCode === KEYS.UP) { curIdx = (curIdx - 1 + n) % n; setFocus(curIdx); handled = true; }
-        else if (e.keyCode === KEYS.LEFT) { hideUI(); handled = true; }
-    } else {
-        if (e.keyCode === KEYS.DOWN || e.keyCode === KEYS.UP) { showUI(); handled = true; }
-    }
-    if (handled) e.preventDefault();
+    if (!overlay.classList.contains('active')) { e.preventDefault(); showUI(); return; }
+    resetHideTimer();
+    const n = channels.length;
+    if (e.keyCode === K.DOWN)  { e.preventDefault(); if(n>0) { curIdx = (curIdx+1)%n; setFocus(curIdx); } }
+    else if (e.keyCode === K.UP) { e.preventDefault(); if(n>0) { curIdx = (curIdx-1+n)%n; setFocus(curIdx); } }
+    else if ([K.OK, K.OK2, K.RIGHT].includes(e.keyCode)) { e.preventDefault(); if(n>0) { playChannel(curIdx); hideUI(); } }
+    else if (e.keyCode === K.LEFT) { e.preventDefault(); hideUI(); }
 });
 
-async function init() {
-    try {
-        // Bước 1: Đợi fetch danh sách từ GitHub về thành công hoàn toàn
-        const res  = await fetch('https://raw.githubusercontent.com/12ecember93/HT-iptv/main/playlist.json');
-        const data = await res.json();
-        let raw = Object.values(data).flat();
-        
-        const thvl1 = raw.find(c => c.short === 'THVL1');
-        channels = thvl1 ? [thvl1, ...raw.filter(c => c.short !== 'THVL1')] : raw;
+// ── LUỒNG KHỞI TẠO KHÔNG NGHẼN (PHÁT TRƯỚC - FETCH SAU) ──────
+function init() {
+    // Bước 1: Kích hoạt luồng phát VTV1 ngay lập tức, màn hình xoay ngang chuẩn luôn
+    directPlay(DEFAULT_URL);
+    forceLandscape();
+    
+    tryFullscreen();
+    document.addEventListener('click', tryFullscreen, { once: true });
 
-        // Bước 2: Tạo danh sách DOM HTML cho menu sidebar
-        channels.forEach((c, i) => {
-            const el = document.createElement('div');
-            el.className = 'side-item';
-            el.innerHTML = `<img src="${c.logo}" loading="lazy" title="${c.name}">`;
-            el.addEventListener('click', (e) => { e.stopPropagation(); playChannel(i); hideUI(); });
-            sidebar.appendChild(el);
+    // Bước 2: Chạy ngầm việc tải danh sách từ file JSON để dựng Sidebar mà không làm đứng hình Player
+    fetch('playlist.json')
+        .then(res => res.json())
+        .then(data => {
+            let raw = Object.values(data).flat();
+            const thvl1 = raw.find(c => c.short === 'THVL1');
+            channels = thvl1 ? [thvl1, ...raw.filter(c => c.short !== 'THVL1')] : raw;
+
+            sidebar.innerHTML = ""; // Xóa dữ liệu rỗng
+            channels.forEach((c, i) => {
+                const el = document.createElement('div');
+                el.className = 'side-item';
+                el.setAttribute('data-url', c.url);
+                el.innerHTML = `<img src="${c.logo}" loading="lazy" title="${c.name}">`;
+                el.addEventListener('click', (e) => { e.stopPropagation(); playChannel(i); hideUI(); });
+                sidebar.appendChild(el);
+            });
+
+            // Đồng bộ lại vị trí trỏ kênh VTV1 trong menu
+            const vtv1Idx = channels.findIndex(c => c.short === 'VTV1');
+            curIdx = vtv1Idx >= 0 ? vtv1Idx : 0;
+            if (sidebar.children[curIdx]) {
+                sidebar.children[curIdx].classList.add('active');
+            }
+        })
+        .catch(err => {
+            console.log("Fetch playlist ngầm lỗi, giữ nguyên luồng phát trực tiếp.");
         });
-
-        // Bước 3: Sau khi mọi thứ đã nạp xong vào bộ nhớ, tìm vị trí VTV1 và kích hoạt phát tự động
-        const vtv1Idx = channels.findIndex(c => c.short === 'VTV1');
-        playChannel(vtv1Idx >= 0 ? vtv1Idx : 0);
-
-        forceLandscape();
-    } catch (err) { 
-        loader.style.display = 'block'; 
-        loader.innerText = 'LỖI TẢI DANH SÁCH TỪ GITHUB'; 
-    }
 }
 
 init();
