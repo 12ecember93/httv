@@ -255,7 +255,7 @@ function init() {
     document.addEventListener('click', tryFullscreen, { once: true });
 
     // Bước 2: Chạy ngầm việc tải danh sách từ file JSON để dựng Sidebar mà không làm đứng hình Player
-    fetch('playlist.json')
+    fetch('playlist.js')
         .then(res => res.json())
         .then(data => {
             let raw = Object.values(data).flat();
