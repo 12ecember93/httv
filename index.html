@@ -2,45 +2,37 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, minimal-ui">
-    <title>TV GLOBAL FIX</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>TV FULLSCREEN FIX</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src="playlist.js"></script>
 
     <style>
         :root { 
-            --bg-dark: #000; 
             --yellow: #ffcc00; 
             --focus-bg: rgba(255, 255, 255, 0.25); 
-            --ui-trans: 0.25s;
+            --ui-trans: 0.2s;
         }
         * { box-sizing: border-box; }
         
-        /* ── CHÌA KHÓA FIX SAFARI/MOBILE - ÉP DỌC THÀNH NGANG BẰNG CSS ── */
-        html {
+        /* ── TOÀN BỘ BỘ KHUNG ÉP FULLSCREEN KHÔNG CO KHÚC ── */
+        html, body {
+            margin: 0; padding: 0;
             width: 100%; height: 100%;
-            overflow: hidden; background: #000;
-        }
-        body {
-            margin: 0; padding: 0; 
-            color: #fff; font-family: sans-serif; 
-            -webkit-tap-highlight-color: transparent;
-            width: 100%; height: 100%;
-            overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
+            background: #000; overflow: hidden;
+            position: fixed; inset: 0;
         }
 
-        /* Container chính để xoay */
+        /* Container này quyết định việc ép xoay full màn hình */
         #rotation-wrapper {
-            position: relative;
+            position: absolute;
             background: #000;
-            transform-origin: center center;
             overflow: hidden;
-            /* JavaScript sẽ tự động set width, height và transform xoay ở đây */
+            display: block;
+            transition: transform 0.1s ease-out;
         }
 
-        /* ── VIDEO CONTAINER chuẩn NGANG ────────────────────────────── */
+        /* ── LAYOUT PHÍA TRONG LUÔN THEO CHUẨN NGANG 100% ── */
         #video-viewport {
             position: absolute; inset: 0;
             width: 100%; height: 100%;
@@ -48,25 +40,25 @@
         }
         video { 
             width: 100%; height: 100%; 
-            object-fit: contain; /* Căn giữa không bị cắt */
+            object-fit: contain; /* Đảm bảo video không bị cắt xén góc */
+            background: #000;
             display: block; 
         }
 
-        /* ── UI OVERLAY ─────────────────────────────────────────── */
+        /* ── UI OVERLAY CONTROLS ──────────────────────────────── */
         .controls-overlay {
             position: absolute; inset: 0;
-            background: rgba(0,0,0,0.25);
+            background: rgba(0,0,0,0.2);
             opacity: 0; pointer-events: none;
             transition: opacity var(--ui-trans); z-index: 50;
         }
         .controls-overlay.active { opacity: 1; pointer-events: auto; }
 
-        /* Sidebar - Tối ưu hiển thị cho Mobile xoay ngang */
         .sidebar {
             position: absolute; top: 0; left: 0;
-            width: 25vw; min-width: 100px; max-width: 150px;
+            width: 20%; min-width: 110px; max-width: 150px;
             height: 100%;
-            background: rgba(10,10,10,0.96);
+            background: rgba(10,10,10,0.95);
             border-right: 1px solid #333;
             overflow-y: auto; overflow-x: hidden;
             transform: translateX(-100%);
@@ -77,29 +69,25 @@
         .controls-overlay.active .sidebar { transform: translateX(0); }
 
         .side-item {
-            padding: 8px; border-bottom: 1px solid #1a1a1a;
+            padding: 10px 6px; border-bottom: 1px solid #1a1a1a;
             text-align: center; opacity: 0.5;
             cursor: pointer; transition: 0.15s; outline: none;
-            /* Tự động căn chỉnh kích thước logo */
             display: flex; align-items: center; justify-content: center;
-            min-height: 48px;
+            min-height: 50px;
         }
         .side-item.active { opacity: 1; border-left: 4px solid var(--yellow); background: rgba(255,204,0,0.12); }
-        .side-item.focused { opacity: 1; background: var(--focus-bg); transform: scale(1.05); }
+        .side-item.focused { opacity: 1; background: var(--focus-bg); transform: scale(1.03); }
         
         .side-item img {
-            max-width: 90%; 
-            max-height: 38px; /* Tối ưu chiều cao logo cho mobile xoay ngang */
-            object-fit: contain; 
-            pointer-events: none; 
-            display: block; 
-            margin: auto;
+            max-width: 85%; max-height: 35px;
+            object-fit: contain; pointer-events: none;
+            display: block; margin: auto;
         }
 
         #stats {
             position: absolute; top: 10px; right: 10px;
             background: rgba(0,0,0,0.6);
-            color: #00ff00; font-family: monospace; font-size: 10px;
+            color: #00ff00; font-family: monospace; font-size: 11px;
             padding: 3px 6px; border-radius: 4px;
             pointer-events: none; white-space: nowrap;
         }
@@ -128,49 +116,39 @@
 </div>
 
 <script>
-// ── PHẦN 1: ÉP DỌC THÀNH NGANG BẰNG JS (Cho Safari/Mobile) ─────────────
+// ── FIX TOÀN DIỆN LỖI CO KHÚC BẰNG LOGIC ĐỔI TRỤC TỌA ĐỘ ──
 const wrapper = document.getElementById('rotation-wrapper');
-let isXoay = false; // Biến kiểm tra xem wrapper có đang xoay hay không
 
 function forceLandscape() {
-    const ww = window.innerWidth;
-    const wh = window.innerHeight;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
 
-    // Tỷ lệ màn hình chuẩn ngang 16:9 (Hoặc tỷ lệ video của bạn)
-    const aspect = 16 / 9;
-
-    // Nếu màn hình đang ở chế độ DỌC (Safari khóa ngang)
-    if (ww < wh) {
-        isXoay = true;
+    if (w < h) {
+        // Trường hợp máy ĐỨNG (Khóa xoay Safari)
+        // Ép kích thước wrapper ngược lại: Rộng bằng chiều cao máy, Cao bằng chiều rộng máy
+        wrapper.style.width = h + 'px';
+        wrapper.style.height = w + 'px';
         
-        // Wrapper sẽ lấy chiều cao màn hình dọn làm chiều rộng nằm ngang
-        wrapper.style.width  = wh + 'px'; 
-        wrapper.style.height = ww + 'px';
-        
-        // Tự động scale wrapper để video full màn hình không bị cắt 2 bên dọn
-        const scale = wh / (ww * aspect) > 1 ? wh / (ww * aspect) : 1;
-        
-        // ÉP XOAY 90 độ và scale
-        wrapper.style.transform = `rotate(90deg) scale(${scale})`;
+        // Căn lề dịch chuyển chính xác vào tâm màn hình trước khi xoay 90 độ
+        wrapper.style.top = (h - w) / 2 + 'px';
+        wrapper.style.left = (w - h) / 2 + 'px';
+        wrapper.style.transform = 'rotate(90deg)';
     } else {
-        // Màn hình đang ở chế độ NGANG (TV, hoặc mobile đã xoay)
-        isXoay = false;
-        wrapper.style.width  = '100vw'; 
-        wrapper.style.height = '100vh';
-        wrapper.style.transform = 'rotate(0deg) scale(1)';
+        // Trường hợp máy NGANG (TV hoặc Điện thoại đã xoay ngang sẵn)
+        wrapper.style.width = '100%';
+        wrapper.style.height = '100%';
+        wrapper.style.top = '0px';
+        wrapper.style.left = '0px';
+        wrapper.style.transform = 'rotate(0deg)';
     }
-    
-    // Đảm bảo video được căn giữa và không object-fit
-    const video = document.getElementById('main-video');
-    video.style.objectFit = 'contain';
 }
 
-// Chạy khởi tạo và gán sự kiện resize
+// Gọi thực thi lập tức
 forceLandscape();
 window.addEventListener('resize', forceLandscape);
 window.addEventListener('orientationchange', forceLandscape);
 
-// ── PHẦN 2: CHỨC NĂNG TV VÀ PLAYER GỐC ───────────────────────────────
+// ── GIỮ NGUYÊN TOÀN BỘ PHẦN CODE LOGIC PLAYER (PHẦN 2 & PHẦN 3 CŨ) VÌ ĐÃ CHUẨN ──
 const v       = document.getElementById('main-video');
 const overlay = document.getElementById('ui-overlay');
 const sidebar = document.getElementById('sidebar-el');
@@ -227,7 +205,6 @@ function setFocus(idx) { document.querySelectorAll('.side-item').forEach(el => e
 const el = sidebar.children[idx]; if (el) { el.classList.add('focused'); el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } }
 function clearFocus() { document.querySelectorAll('.side-item').forEach(el => el.classList.remove('focused')); }
 
-// ── Touch / Mouse ─────────────────────────────────────────────
 document.getElementById('video-viewport').addEventListener('click', (e) => {
     if (overlay.contains(e.target) && e.target !== overlay) return;
     overlay.classList.contains('active') ? hideUI() : showUI();
@@ -239,82 +216,40 @@ function tryFullscreen() {
     else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
 }
 
-// ── PHẦN 3: TV REMOTE FIX - TOÀN BỘ MÃ PHÍM CHO 100% TV ──────────────
 document.addEventListener('keydown', (e) => {
-    // Debug: Mở console và bấm remote để xem mã phím TV của bạn
-    // console.log('Bấm phím:', e.keyCode, e.key);
-
-    // Danh sách mã phím TV Remote chuẩn và phổ biến
     const KEYS = {
-        // Phím D-pad (Chuẩn)
         UP: 38, DOWN: 40, LEFT: 37, RIGHT: 39, OK: 13,
-        // Phím Back/Menu/Media (Sửa lỗi cho TV cũ)
-        BACK: [8, 10009, 461, 27], // 8 là back, 27 là esc
+        BACK: [8, 10009, 461, 27],
         MENU: [18, 93, 10134, 10140], 
-        SELECT: 23, // Một số remote có mã OK là 23
-        FAST_FORWARD: 228, REWIND: 227
+        SELECT: 23
     };
-
     const n = channels.length;
     let handled = false;
 
-    // 1. Phím OK (vừa OK chuẩn vừa OK Select của Tivi cũ)
     if (e.keyCode === KEYS.OK || e.keyCode === KEYS.SELECT) {
-        if (!overlay.classList.contains('active')) {
-            showUI();
-        } else {
-            playChannel(curIdx);
-            hideUI();
-        }
+        if (!overlay.classList.contains('active')) { showUI(); } 
+        else { playChannel(curIdx); hideUI(); }
         handled = true;
     } 
-    // 2. Phím MENU (hoặc phím Right trên mobile xoay)
     else if (KEYS.MENU.includes(e.keyCode) || (e.keyCode === KEYS.RIGHT)) {
-        if (!overlay.classList.contains('active')) {
-            showUI();
-        } else {
-            hideUI();
-        }
+        if (!overlay.classList.contains('active')) { showUI(); } else { hideUI(); }
         handled = true;
     }
-    // 3. Phím BACK (vừa Back chuẩn vừa Escape)
     else if (KEYS.BACK.includes(e.keyCode)) {
-        if (overlay.classList.contains('active')) {
-            hideUI();
-            handled = true;
-        }
+        if (overlay.classList.contains('active')) { hideUI(); handled = true; }
     }
 
-    // ── Xử lý khi UI ĐANG BẬT ───────────────────
     if (overlay.classList.contains('active')) {
         resetHideTimer();
-        
-        // 4. Phím D-pad UP/DOWN (Có sửa lỗi logic cho Mobile Xoay)
-        if (e.keyCode === KEYS.DOWN) {
-            // Khi xoay ngang: "Mã Down" là đi xuống
-            curIdx = (curIdx + 1) % n; setFocus(curIdx); handled = true;
-        } else if (e.keyCode === KEYS.UP) {
-            curIdx = (curIdx - 1 + n) % n; setFocus(curIdx); handled = true;
-        }
-        // 5. Phím LEFT/RIGHT (Logic cho Mobile Xoay)
-        else if (e.keyCode === KEYS.LEFT) {
-            // Khi xoay ngang: "Mã Left" là đi ra (Menu ẩn)
-            hideUI(); handled = true;
-        }
-        // OK Select đã xử lý ở trên
+        if (e.keyCode === KEYS.DOWN) { curIdx = (curIdx + 1) % n; setFocus(curIdx); handled = true; } 
+        else if (e.keyCode === KEYS.UP) { curIdx = (curIdx - 1 + n) % n; setFocus(curIdx); handled = true; }
+        else if (e.keyCode === KEYS.LEFT) { hideUI(); handled = true; }
     } else {
-        // ── Xử lý khi UI ĐANG TẮT ───────────────────
-        
-        // 6. Cho phép bấm D-pad UP/DOWN để hiện UI
-        if (e.keyCode === KEYS.DOWN || e.keyCode === KEYS.UP) {
-            showUI(); handled = true;
-        }
+        if (e.keyCode === KEYS.DOWN || e.keyCode === KEYS.UP) { showUI(); handled = true; }
     }
-
     if (handled) { e.preventDefault(); }
 });
 
-// ── Init ───────────────────────────────────────────────────────
 async function init() {
     try {
         let raw = Object.values(playlistData).flat();
@@ -332,12 +267,11 @@ async function init() {
         const vtv1Idx = channels.findIndex(c => c.short === 'VTV1');
         playChannel(vtv1Idx >= 0 ? vtv1Idx : 0);
 
-        forceLandscape(); // Ép ngang lần cuối
+        forceLandscape();
         tryFullscreen();
         document.addEventListener('click', tryFullscreen, { once: true });
     } catch (err) { loader.style.display = 'block'; loader.innerText = 'LỖI DANH SÁCH'; }
 }
-
 init();
 </script>
 </body>
