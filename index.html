@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TV AUTOMATIC ENGINE</title>
+    <title>TV AUTO FIXED</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         :root { --yellow: #ffcc00; --focus-bg: rgba(255, 255, 255, 0.25); }
@@ -22,7 +22,7 @@
         .side-item.focused { opacity: 1; background: var(--focus-bg); transform: scale(1.04); }
         .side-item img { max-width: 90%; max-height: 40px; object-fit: contain; pointer-events: none; }
         #stats { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #00ff00; font-family: monospace; font-size: 11px; padding: 4px 8px; border-radius: 4px; pointer-events: none; }
-        #loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: var(--yellow); font-weight: bold; font-size: 16px; z-index: 60; text-shadow: 0 0 10px #000; pointer-events: none; }
+        #loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: var(--yellow); font-weight: bold; font-size: 16px; z-index: 60; text-shadow: 0 0 10px #000; pointer-events: none; display: block; }
     </style>
 </head>
 <body>
@@ -30,7 +30,7 @@
 <div id="rotation-wrapper">
     <div id="video-viewport">
         <video id="main-video" autoplay playsinline webkit-playsinline></video>
-        <div id="loading">ĐANG TẢI...</div>
+        <div id="loading">ĐANG TẢI DANH SÁCH...</div>
         <div class="controls-overlay" id="ui-overlay">
             <div class="sidebar" id="sidebar-el"></div>
             <div id="stats">—</div>
@@ -80,8 +80,14 @@ function updateStats() {
 }
 
 function playChannel(idx) {
-    if (idx < 0 || idx >= channels.length) return;
-    curIdx = idx; loader.style.display = 'block';
+    if (!channels || channels.length === 0 || idx < 0 || idx >= channels.length) {
+        loader.innerText = 'LỖI ĐƯỜNG TRUYỀN KÊNH';
+        return;
+    }
+    
+    curIdx = idx; 
+    loader.style.display = 'block';
+    loader.innerText = 'ĐANG TẢI KÊNH...';
     
     document.querySelectorAll('.side-item').forEach(el => el.classList.remove('active'));
     const activeEl = sidebar.children[idx];
@@ -90,17 +96,25 @@ function playChannel(idx) {
         activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); 
     }
 
-    // Luôn luôn ép âm thanh mở sẵn, không dùng câm ngầm làm đứng hình HLS
     v.muted = false;
 
     if (Hls.isSupported()) {
-        hls.detachMedia(); hls.loadSource(channels[idx].url); hls.attachMedia(v);
+        hls.detachMedia(); 
+        hls.loadSource(channels[idx].url); 
+        hls.attachMedia(v);
         hls.once(Hls.Events.MANIFEST_PARSED, () => {
-            v.play().catch(e => console.log("Engine Play Blocked:", e));
+            v.play().catch(() => {
+                // Nếu Chrome/Android chặn autoplay có tiếng, chuyển sang muted để chạy được hình rồi tính sau
+                v.muted = true;
+                v.play().catch(e => console.log('Autoplay blocked:', e));
+            });
         });
     } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
         v.src = channels[idx].url; 
-        v.play().catch(e => console.log("Engine Play Blocked:", e));
+        v.play().catch(() => {
+            v.muted = true;
+            v.play().catch(e => console.log('Autoplay blocked:', e));
+        });
     }
 }
 
@@ -118,12 +132,15 @@ const el = sidebar.children[idx]; if (el) { el.classList.add('focused'); el.scro
 function clearFocus() { document.querySelectorAll('.side-item').forEach(el => el.classList.remove('focused')); }
 
 document.getElementById('video-viewport').addEventListener('click', (e) => {
+    // Nếu chạm màn hình mà đang bị câm (do chính sách bảo mật), tự động mở tiếng lại
+    if (v.muted) v.muted = false;
     if (overlay.contains(e.target) && e.target !== overlay) return;
     overlay.classList.contains('active') ? hideUI() : showUI();
 });
 
-// REMOTE TV FIX COMDETE
+// REMOTE TV COMDETE FIX
 document.addEventListener('keydown', (e) => {
+    if (v.muted) v.muted = false;
     const KEYS = { UP: 38, DOWN: 40, LEFT: 37, RIGHT: 39, OK: 13, BACK: [8, 10009, 461, 27], MENU: [18, 93, 10134, 10140], SELECT: 23 };
     const n = channels.length;
     let handled = false;
@@ -152,7 +169,7 @@ document.addEventListener('keydown', (e) => {
 
 async function init() {
     try {
-        // Tải danh sách động online trực tiếp từ github công cộng của bạn
+        // Bước 1: Đợi fetch danh sách từ GitHub về thành công hoàn toàn
         const res  = await fetch('https://raw.githubusercontent.com/12ecember93/HT-iptv/main/playlist.json');
         const data = await res.json();
         let raw = Object.values(data).flat();
@@ -160,6 +177,7 @@ async function init() {
         const thvl1 = raw.find(c => c.short === 'THVL1');
         channels = thvl1 ? [thvl1, ...raw.filter(c => c.short !== 'THVL1')] : raw;
 
+        // Bước 2: Tạo danh sách DOM HTML cho menu sidebar
         channels.forEach((c, i) => {
             const el = document.createElement('div');
             el.className = 'side-item';
@@ -168,11 +186,15 @@ async function init() {
             sidebar.appendChild(el);
         });
 
+        // Bước 3: Sau khi mọi thứ đã nạp xong vào bộ nhớ, tìm vị trí VTV1 và kích hoạt phát tự động
         const vtv1Idx = channels.findIndex(c => c.short === 'VTV1');
         playChannel(vtv1Idx >= 0 ? vtv1Idx : 0);
 
         forceLandscape();
-    } catch (err) { loader.style.display = 'block'; loader.innerText = 'LỖI DANH SÁCH'; }
+    } catch (err) { 
+        loader.style.display = 'block'; 
+        loader.innerText = 'LỖI TẢI DANH SÁCH TỪ GITHUB'; 
+    }
 }
 
 init();
