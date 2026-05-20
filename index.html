@@ -3,26 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TV WEB CHUẨN ĐẸP</title>
+    <title>TV AUTOMATIC ENGINE</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         :root { --yellow: #ffcc00; --focus-bg: rgba(255, 255, 255, 0.25); }
         * { box-sizing: border-box; }
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; color: #fff; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        /* GIAO DIỆN MÀN HÌNH CHỜ ĐỂ BẤY SAFARI */
-        #splash-screen {
-            position: fixed; inset: 0; background: #0a0a0a; z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        #play-btn {
-            padding: 16px 36px; font-size: 18px; font-weight: bold; color: #000;
-            background: var(--yellow); border: none; border-radius: 30px;
-            cursor: pointer; box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
-            transition: transform 0.2s;
-        }
-        #play-btn:active { transform: scale(0.95); }
-
         #rotation-wrapper { position: absolute; background: #000; top: 50%; left: 50%; transform: translate(-50%, -50%); display: block; overflow: hidden; }
         #video-viewport { width: 100%; height: 100%; position: relative; }
         video { width: 100%; height: 100%; object-fit: contain; display: block; }
@@ -40,11 +26,6 @@
     </style>
 </head>
 <body>
-
-<div id="splash-screen">
-    <h2 style="margin-bottom: 20px; letter-spacing: 2px;">HT TV PRO</h2>
-    <button id="play-btn">BẤM ĐỂ XEM TV</button>
-</div>
 
 <div id="rotation-wrapper">
     <div id="video-viewport">
@@ -74,7 +55,7 @@ forceLandscape();
 window.addEventListener('resize', forceLandscape);
 window.addEventListener('orientationchange', forceLandscape);
 
-// ── PLAYER LOGIC ────────────────────────────────────────────────────
+// ── PLAYER ENGINE ───────────────────────────────────────────────────
 const v       = document.getElementById('main-video');
 const overlay = document.getElementById('ui-overlay');
 const sidebar = document.getElementById('sidebar-el');
@@ -109,14 +90,17 @@ function playChannel(idx) {
         activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); 
     }
 
+    // Luôn luôn ép âm thanh mở sẵn, không dùng câm ngầm làm đứng hình HLS
+    v.muted = false;
+
     if (Hls.isSupported()) {
         hls.detachMedia(); hls.loadSource(channels[idx].url); hls.attachMedia(v);
         hls.once(Hls.Events.MANIFEST_PARSED, () => {
-            v.play().catch(e => console.log(e));
+            v.play().catch(e => console.log("Engine Play Blocked:", e));
         });
     } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
         v.src = channels[idx].url; 
-        v.play().catch(e => console.log(e));
+        v.play().catch(e => console.log("Engine Play Blocked:", e));
     }
 }
 
@@ -138,21 +122,37 @@ document.getElementById('video-viewport').addEventListener('click', (e) => {
     overlay.classList.contains('active') ? hideUI() : showUI();
 });
 
-function tryFullscreen() {
-    const el = document.documentElement;
-    if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
-    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-}
+// REMOTE TV FIX COMDETE
+document.addEventListener('keydown', (e) => {
+    const KEYS = { UP: 38, DOWN: 40, LEFT: 37, RIGHT: 39, OK: 13, BACK: [8, 10009, 461, 27], MENU: [18, 93, 10134, 10140], SELECT: 23 };
+    const n = channels.length;
+    let handled = false;
 
-// SỰ KIỆN KÍCH HOẠT CHÍNH: BẤM NÚT ĐỂ VÀO APP VÀ BẺ GÃY KHÓA AUTOPLAY CỦA SAFARI
-document.getElementById('play-btn').addEventListener('click', () => {
-    document.getElementById('splash-screen').style.display = 'none';
-    tryFullscreen();
-    init(); // Sau khi bấm mới cho phép gọi hàm fetch online và chạy video có tiếng
+    if (e.keyCode === KEYS.OK || e.keyCode === KEYS.SELECT) {
+        if (!overlay.classList.contains('active')) showUI();
+        else { playChannel(curIdx); hideUI(); }
+        handled = true;
+    } else if (KEYS.MENU.includes(e.keyCode) || e.keyCode === KEYS.RIGHT) {
+        overlay.classList.contains('active') ? hideUI() : showUI();
+        handled = true;
+    } else if (KEYS.BACK.includes(e.keyCode)) {
+        if (overlay.classList.contains('active')) { hideUI(); handled = true; }
+    }
+
+    if (overlay.classList.contains('active')) {
+        resetHideTimer();
+        if (e.keyCode === KEYS.DOWN) { curIdx = (curIdx + 1) % n; setFocus(curIdx); handled = true; }
+        else if (e.keyCode === KEYS.UP) { curIdx = (curIdx - 1 + n) % n; setFocus(curIdx); handled = true; }
+        else if (e.keyCode === KEYS.LEFT) { hideUI(); handled = true; }
+    } else {
+        if (e.keyCode === KEYS.DOWN || e.keyCode === KEYS.UP) { showUI(); handled = true; }
+    }
+    if (handled) e.preventDefault();
 });
 
 async function init() {
     try {
+        // Tải danh sách động online trực tiếp từ github công cộng của bạn
         const res  = await fetch('https://raw.githubusercontent.com/12ecember93/HT-iptv/main/playlist.json');
         const data = await res.json();
         let raw = Object.values(data).flat();
@@ -174,6 +174,8 @@ async function init() {
         forceLandscape();
     } catch (err) { loader.style.display = 'block'; loader.innerText = 'LỖI DANH SÁCH'; }
 }
+
+init();
 </script>
 </body>
 </html>
