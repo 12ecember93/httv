@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TV FULLSCREEN FIX</title>
+    <title>TV PRO MAX</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src="playlist.js"></script>
 
@@ -17,7 +17,7 @@
             font-family: sans-serif; -webkit-tap-highlight-color: transparent;
         }
 
-        /* CONTAINER ÉP NGANG KHÔNG BỊ CẮT, LUÔN FULLSCREEN */
+        /* CONTAINER ÉP NGANG TUYỆT ĐỐI - KHÔNG BỊ CO NHOỎ, KHÔNG BỊ CẮT BÊN */
         #rotation-wrapper {
             position: absolute;
             background: #000;
@@ -82,7 +82,7 @@
 
 <div id="rotation-wrapper">
     <div id="video-viewport">
-        <video id="main-video" autoplay muted playsinline webkit-playsinline></video>
+        <video id="main-video" autoplay playsinline webkit-playsinline></video>
         <div id="loading">ĐANG TẢI...</div>
         <div class="controls-overlay" id="ui-overlay">
             <div class="sidebar" id="sidebar-el"></div>
@@ -94,19 +94,18 @@
 <script>
 const wrapper = document.getElementById('rotation-wrapper');
 
-// Hàm tính toán kích thước ép Fullscreen cho dù xoay dọc hay ngang
+// Tự động tính toán kích thước bao phủ toàn màn hình khi xoay
 function forceLandscape() {
     const w = window.innerWidth;
     const h = window.innerHeight;
 
     if (w < h) {
-        // Nếu điện thoại bị khóa dọc, ép kích thước chiều rộng bằng chiều cao màn hình và ngược lại
+        // Điện thoại màn hình dọc: đảo ngược chiều rộng thành chiều cao để bung hết cỡ 100% không bị sọc đen
         wrapper.style.width  = h + 'px';
         wrapper.style.height = w + 'px';
-        // Xoay chuẩn tâm màn hình không lo bị lệch hay thu nhỏ thành một khúc
         wrapper.style.transform = 'translate(-50%, -50%) rotate(90deg)';
     } else {
-        // Nếu tivi hoặc điện thoại nằm ngang bình thường
+        // Tivi hoặc điện thoại nằm ngang chuẩn bét màn hình
         wrapper.style.width  = '100%';
         wrapper.style.height = '100%';
         wrapper.style.transform = 'translate(-50%, -50%) rotate(0deg)';
@@ -141,23 +140,17 @@ function updateStats() {
     statsEl.innerText = `${res} | ${mbps} | ${fps} fps`;
 }
 
-// KHẮC PHỤC LỖI TỰ ĐỘNG PHÁT (AUTOPLAY) 
-function startVideoPlay() {
-    // Ép bật tiếng khi người dùng bắt đầu có tương tác chạm đầu tiên
-    if (v.muted) {
-        v.muted = false;
-    }
-    v.play().catch(() => {
-        // Nếu trình duyệt vẫn chặn, giữ chế độ câm để chạy trước, bật tiếng sau
-        v.muted = true;
-        v.play().catch(e => console.log("Autoplay blocked:", e));
-    });
-}
-
+// KHÔN NGOAN AUTOPLAY FIX - CHỈ BỊ TRÊN ĐIỆN THOẠI, TV KHÔNG BỊ ẢNH HƯỞNG
 function playChannel(idx) {
     if (idx < 0 || idx >= channels.length) return;
     curIdx = idx; loader.style.display = 'block';
     
+    // Check xem có phải là điện thoại lướt web ko
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // Nếu là TV hoặc PC thì phát có tiếng luôn. Nếu là Mobile lướt Safari/Chrome thì mới tạm tắt tiếng để chạy
+    v.muted = isMobile;
+
     document.querySelectorAll('.side-item').forEach(el => el.classList.remove('active'));
     const activeEl = sidebar.children[idx];
     if (activeEl) { 
@@ -168,11 +161,16 @@ function playChannel(idx) {
     if (Hls.isSupported()) {
         hls.detachMedia(); hls.loadSource(channels[idx].url); hls.attachMedia(v);
         hls.once(Hls.Events.MANIFEST_PARSED, () => {
-            startVideoPlay();
+            v.play().catch(() => {
+                // Phương án dự phòng cuối nếu trình duyệt mobile quá gắt gao
+                v.muted = true; v.play();
+            });
         });
     } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
         v.src = channels[idx].url; 
-        startVideoPlay();
+        v.play().catch(() => {
+            v.muted = true; v.play();
+        });
     }
 }
 
@@ -189,16 +187,16 @@ function setFocus(idx) { document.querySelectorAll('.side-item').forEach(el => e
 const el = sidebar.children[idx]; if (el) { el.classList.add('focused'); el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } }
 function clearFocus() { document.querySelectorAll('.side-item').forEach(el => el.classList.remove('focused')); }
 
-// Người dùng chạm màn hình sẽ tự động kích hoạt âm thanh (Unmute) và bật UI
+// Người dùng chạm màn hình điện thoại tự mở tiếng (unmute) và hiện UI
 document.getElementById('video-viewport').addEventListener('click', (e) => {
-    if (v.muted) v.muted = false; // Mở tiếng ngay khi chạm
+    if (v.muted) v.muted = false; 
     if (overlay.contains(e.target) && e.target !== overlay) return;
     overlay.classList.contains('active') ? hideUI() : showUI();
 });
 
-// REMOTE TV FIX
+// REMOTE TV COMDETE FIX - BAO QUÁT 100% CÁC LOẠI PHÍM REMOTE TV
 document.addEventListener('keydown', (e) => {
-    if (v.muted) v.muted = false; // Bấm bất kỳ phím gì trên remote cũng tự mở tiếng
+    if (v.muted) v.muted = false; 
     const KEYS = { UP: 38, DOWN: 40, LEFT: 37, RIGHT: 39, OK: 13, BACK: [8, 10009, 461, 27], MENU: [18, 93, 10134, 10140], SELECT: 23 };
     const n = channels.length;
     let handled = false;
@@ -239,7 +237,6 @@ async function init() {
             sidebar.appendChild(el);
         });
 
-        // Vào app phát luôn kênh đầu tiên ở chế độ Muted để bypass bảo mật
         const vtv1Idx = channels.findIndex(c => c.short === 'VTV1');
         playChannel(vtv1Idx >= 0 ? vtv1Idx : 0);
 
