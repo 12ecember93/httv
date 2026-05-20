@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TV</title>
+    <title>TV PERFECT FULLSCREEN</title>
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/12ecember93/HT-iptv/main/httv.png">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="playlist.js"></script>
+
     <style>
         :root { --yellow: #ffcc00; --focus-bg: rgba(255,255,255,0.25); --sidebar-w: 163px; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -18,12 +20,10 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* KHUNG APP ÉP XOAY NGANG TUYỆT ĐỐI */
+        /* KHUNG CHỨA ÉP XOAY NGANG CƯỠNG BỨC - KHÔNG LO KHÓA XOAY DỌC */
         #app {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            position: absolute;
+            top: 50%; left: 50%;
             background: #000;
             overflow: hidden;
         }
@@ -42,6 +42,7 @@
             pointer-events: none; display: none;
         }
 
+        /* Overlay + sidebar */
         .controls-overlay {
             position: absolute; inset: 0;
             background: rgba(0,0,0,0.2);
@@ -73,6 +74,7 @@
         .side-item.focused { opacity: 1; background: var(--focus-bg); transform: scale(1.04); }
         .side-item img { max-width: 90%; max-height: 50px; object-fit: contain; pointer-events: none; display: block; margin: auto; }
 
+        /* Stats góc trên phải */
         #stats {
             position: absolute; top: 10px; right: 10px;
             background: rgba(0,0,0,0.65);
@@ -104,28 +106,26 @@ let hls = new Hls({ manifestLoadingMaxRetry: 10, levelLoadingMaxRetry: 10, fragL
 let channels = [], curIdx = 0, uiTimer = null, statsInterval = null;
 let frameCount = 0, fps = 0, lastTs = 0;
 
-// LINK KÊNH MẶC ĐỊNH ĐỂ PHÁT NGAY LẬP TỨC KHI MỞ WEB
-const DEFAULT_URL = "https://060524.com/vtv1/index.m3u8";
-
-// ── TỰ ĐỘNG ÉP XOAY NGANG TOÀN MÀN HÌNH BẤT CHẤP KHÓA XOAY ──────────
-function forceLandscape() {
+// ── TỰ ĐỘNG ÉP XOAY NGANG FULLSCREEN BẤT CHẤP KHÓA XOAY DỌC ──
+function autoResponsiveLandscape() {
     const w = window.innerWidth;
     const h = window.innerHeight;
+
     if (w < h) {
-        // Nếu điện thoại cầm dọc: Đảo kích thước và xoay 90 độ
+        // Nếu đth đang ở chế độ dọc (kể cả khóa xoay dọc)
         app.style.width = h + 'px';
         app.style.height = w + 'px';
         app.style.transform = 'translate(-50%, -50%) rotate(90deg)';
     } else {
-        // Nếu màn hình đã nằm ngang sẵn (TV/PC/Điện thoại nằm ngang)
-        app.style.width = '100vw';
-        app.style.height = '100vh';
+        // Nếu đth nằm ngang hoặc trên Android TV / Máy tính
+        app.style.width = '100%';
+        app.style.height = '100%';
         app.style.transform = 'translate(-50%, -50%) rotate(0deg)';
     }
 }
-forceLandscape();
-window.addEventListener('resize', forceLandscape);
-window.addEventListener('orientationchange', forceLandscape);
+autoResponsiveLandscape();
+window.addEventListener('resize', autoResponsiveLandscape);
+window.addEventListener('orientationchange', autoResponsiveLandscape);
 
 // ── FPS ─────────────────────────────────────────────────────
 (function fpsLoop() {
@@ -144,47 +144,42 @@ function updateStats() {
     statsEl.innerText = `${res} | ${mbps} | ${fps} fps`;
 }
 
-// ── HLS ERROR RECOVERY ──────────────────────────────────────
+// ── HLS ─────────────────────────────────────────────────────
 hls.on(Hls.Events.ERROR, (_, d) => {
     if (!d.fatal) return;
     if (d.type === Hls.ErrorTypes.NETWORK_ERROR) hls.startLoad();
     else if (d.type === Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError();
 });
 
-// ── LUỒNG PHÁT TRỰC TIẾP TỐI ƯU SIÊU TỐC ─────────────────────
-function directPlay(url) {
-    loader.style.display = 'block';
-    if (Hls.isSupported()) {
-        hls.detachMedia(); hls.loadSource(url); hls.attachMedia(v);
-        hls.once(Hls.Events.MANIFEST_PARSED, () => {
-            v.play().catch(() => {
-                // Nếu trình duyệt mobile chặn tiếng, ép câm phát trước để không bị đứng hình
-                v.muted = true; v.play().catch(() => {});
-            });
-        });
-    } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
-        v.src = url;
-        v.play().catch(() => {
-            v.muted = true; v.play().catch(() => {});
-        });
-    }
-}
-
+// ── Play ────────────────────────────────────────────────────
 function playChannel(idx) {
     if (idx < 0 || idx >= channels.length) return;
     curIdx = idx;
+    const c = channels[idx];
     loader.style.display = 'block';
 
     document.querySelectorAll('.side-item').forEach(el => el.classList.remove('active'));
     const activeEl = sidebar.children[idx];
     if (activeEl) { activeEl.classList.add('active'); activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
 
-    directPlay(channels[idx].url);
+    // Nhận diện môi trường di động để xử lý Autoplay tránh bị kẹt luồng hình ảnh
+    const isMobileBrowser = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.location.href.includes('file:///');
+    v.muted = isMobileBrowser; // Nếu chạy web trên đth thì câm tạm thời để qua mặt bảo mật, Android App/TV mở tiếng luôn
+
+    if (Hls.isSupported()) {
+        hls.detachMedia(); hls.loadSource(c.url); hls.attachMedia(v);
+        hls.once(Hls.Events.MANIFEST_PARSED, () => {
+            v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
+        });
+    } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
+        v.src = c.url;
+        v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
+    }
 }
 
 v.addEventListener('playing', () => loader.style.display = 'none');
 
-// ── UI OVERLAY ──────────────────────────────────────────────
+// ── UI ──────────────────────────────────────────────────────
 function showUI() {
     overlay.classList.add('active');
     setFocus(curIdx);
@@ -212,14 +207,14 @@ function setFocus(idx) {
 }
 function clearFocus() { document.querySelectorAll('.side-item').forEach(el => el.classList.remove('focused')); }
 
-// ── CLICK/TOUCH TO UNMUTE AND SHOW UI ───────────────────────
+// ── Touch / click ───────────────────────────────────────────
 app.addEventListener('click', (e) => {
-    if (v.muted) v.muted = false; // Chạm vào bất kỳ vị trí nào cũng sẽ tự mở tiếng nếu bị trình duyệt tắt
+    if (v.muted) v.muted = false; // Chạm vào bất kỳ vị trí nào trên màn hình đth web sẽ mở tiếng tức thì
     if (sidebar.contains(e.target)) return;
     overlay.classList.contains('active') ? hideUI() : showUI();
 });
 
-// ── FULLSCREEN ENGINE ───────────────────────────────────────
+// ── Fullscreen ──────────────────────────────────────────────
 function tryFullscreen() {
     const el = document.documentElement;
     if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
@@ -227,7 +222,7 @@ function tryFullscreen() {
     if (screen.orientation?.lock) screen.orientation.lock('landscape').catch(() => {});
 }
 
-// ── REMOTE D-PAD / KEYBOARD ─────────────────────────────────
+// ── D-pad ───────────────────────────────────────────────────
 document.addEventListener('keydown', (e) => {
     if (v.muted) v.muted = false;
     const K = { UP:38, DOWN:40, LEFT:37, RIGHT:39, OK:13, OK2:23, BACK:8, MENU:18 };
@@ -239,49 +234,42 @@ document.addEventListener('keydown', (e) => {
     if (!overlay.classList.contains('active')) { e.preventDefault(); showUI(); return; }
     resetHideTimer();
     const n = channels.length;
-    if (e.keyCode === K.DOWN)  { e.preventDefault(); if(n>0) { curIdx = (curIdx+1)%n; setFocus(curIdx); } }
-    else if (e.keyCode === K.UP) { e.preventDefault(); if(n>0) { curIdx = (curIdx-1+n)%n; setFocus(curIdx); } }
-    else if ([K.OK, K.OK2, K.RIGHT].includes(e.keyCode)) { e.preventDefault(); if(n>0) { playChannel(curIdx); hideUI(); } }
+    if (e.keyCode === K.DOWN)  { e.preventDefault(); curIdx = (curIdx+1)%n; setFocus(curIdx); }
+    else if (e.keyCode === K.UP) { e.preventDefault(); curIdx = (curIdx-1+n)%n; setFocus(curIdx); }
+    else if ([K.OK, K.OK2, K.RIGHT].includes(e.keyCode)) { e.preventDefault(); playChannel(curIdx); hideUI(); }
     else if (e.keyCode === K.LEFT) { e.preventDefault(); hideUI(); }
 });
 
-// ── LUỒNG KHỞI TẠO KHÔNG NGHẼN (PHÁT TRƯỚC - FETCH SAU) ──────
+// ── Init ────────────────────────────────────────────────────
 function init() {
-    // Bước 1: Kích hoạt luồng phát VTV1 ngay lập tức, màn hình xoay ngang chuẩn luôn
-    directPlay(DEFAULT_URL);
-    forceLandscape();
-    
-    tryFullscreen();
-    document.addEventListener('click', tryFullscreen, { once: true });
+    try {
+        // ĐỌC TRỰC TIẾP BIẾN PLAYLISTDATA CÓ SẴN TỪ FILE PLAYLIST.JS (KHÔNG CHỜ FETCH MẠNG MẤT GIÂY)
+        let raw = Object.values(playlistData).flat();
 
-    // Bước 2: Chạy ngầm việc tải danh sách từ file JSON để dựng Sidebar mà không làm đứng hình Player
-    fetch('playlist.js')
-        .then(res => res.json())
-        .then(data => {
-            let raw = Object.values(data).flat();
-            const thvl1 = raw.find(c => c.short === 'THVL1');
-            channels = thvl1 ? [thvl1, ...raw.filter(c => c.short !== 'THVL1')] : raw;
+        const thvl1 = raw.find(c => c.short === 'THVL1');
+        channels = thvl1 ? [thvl1, ...raw.filter(c => c.short !== 'THVL1')] : raw;
 
-            sidebar.innerHTML = ""; // Xóa dữ liệu rỗng
-            channels.forEach((c, i) => {
-                const el = document.createElement('div');
-                el.className = 'side-item';
-                el.setAttribute('data-url', c.url);
-                el.innerHTML = `<img src="${c.logo}" loading="lazy" title="${c.name}">`;
-                el.addEventListener('click', (e) => { e.stopPropagation(); playChannel(i); hideUI(); });
-                sidebar.appendChild(el);
-            });
-
-            // Đồng bộ lại vị trí trỏ kênh VTV1 trong menu
-            const vtv1Idx = channels.findIndex(c => c.short === 'VTV1');
-            curIdx = vtv1Idx >= 0 ? vtv1Idx : 0;
-            if (sidebar.children[curIdx]) {
-                sidebar.children[curIdx].classList.add('active');
-            }
-        })
-        .catch(err => {
-            console.log("Fetch playlist ngầm lỗi, giữ nguyên luồng phát trực tiếp.");
+        channels.forEach((c, i) => {
+            const el = document.createElement('div');
+            el.className = 'side-item';
+            el.setAttribute('data-url', c.url);
+            el.innerHTML = `<img src="${c.logo}" loading="lazy" title="${c.name}">`;
+            el.addEventListener('click', (e) => { e.stopPropagation(); playChannel(i); hideUI(); });
+            sidebar.appendChild(el);
         });
+
+        // Tự động tìm vị trí VTV1 để quất ngay lập tức
+        const vtv1Idx = channels.findIndex(c => c.short === 'VTV1');
+        playChannel(vtv1Idx >= 0 ? vtv1Idx : 0);
+
+        autoResponsiveLandscape();
+        tryFullscreen();
+        document.addEventListener('click', tryFullscreen, { once: true });
+
+    } catch (err) {
+        loader.style.display = 'block';
+        loader.innerText = 'LỖI DANH SÁCH';
+    }
 }
 
 init();
