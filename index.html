@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>TV</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/12ecember93/HT-iptv/main/httv.png">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        :root { --yellow: #ffcc00; --focus-bg: rgba(255,255,255,0.25); --sidebar-w: 163px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            width: 100%; height: 100%;
+            background: #000; color: #fff;
+            font-family: sans-serif;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Layout ngang cứng: video chiếm toàn bộ, sidebar overlay lên trên */
+        #app {
+            position: fixed;
+            /* Luôn landscape: width = chiều dài màn hình, height = chiều ngắn */
+            width: max(100vw, 100vh);
+            height: min(100vw, 100vh);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #000;
+        }
+
+        video {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: contain; display: block;
+        }
+
+        #loading {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--yellow); font-weight: bold; font-size: 16px;
+            z-index: 60; text-shadow: 0 0 12px #000;
+            pointer-events: none; display: none;
+        }
+
+        /* Overlay + sidebar */
+        .controls-overlay {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.2);
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.2s; z-index: 50;
+        }
+        .controls-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .sidebar {
+            position: absolute; top: 0; left: 0;
+            width: var(--sidebar-w); height: 100%;
+            background: rgba(10,10,10,0.97);
+            border-right: 1px solid #333;
+            overflow-y: auto; overflow-x: hidden;
+            transform: translateX(-100%);
+            transition: transform 0.2s;
+            scrollbar-width: none;
+        }
+        .sidebar::-webkit-scrollbar { display: none; }
+        .controls-overlay.active .sidebar { transform: translateX(0); }
+
+        .side-item {
+            padding: 14px 10px;
+            border-bottom: 1px solid #1a1a1a;
+            text-align: center; opacity: 0.5;
+            cursor: pointer; transition: 0.15s; outline: none;
+        }
+        .side-item.active { opacity: 1; border-left: 4px solid var(--yellow); background: rgba(255,204,0,0.12); }
+        .side-item.focused { opacity: 1; background: var(--focus-bg); transform: scale(1.04); }
+        .side-item img { max-width: 90%; max-height: 50px; object-fit: contain; pointer-events: none; display: block; margin: auto; }
+
+        /* Stats góc trên phải */
+        #stats {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(0,0,0,0.65);
+            color: #00ff00; font-family: monospace; font-size: 11px;
+            padding: 4px 8px; border-radius: 5px;
+            pointer-events: none; line-height: 1.6; white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <video id="main-video" autoplay playsinline webkit-playsinline muted></video>
+    <div id="loading">ĐANG TẢI...</div>
+    <div class="controls-overlay" id="ui-overlay">
+        <div class="sidebar" id="sidebar-el"></div>
+        <div id="stats">—</div>
+    </div>
+</div>
+
+<script>
+const v       = document.getElementById('main-video');
+const overlay = document.getElementById('ui-overlay');
+const sidebar = document.getElementById('sidebar-el');
+const loader  = document.getElementById('loading');
+const statsEl = document.getElementById('stats');
+const app     = document.getElementById('app');
+
+let hls = new Hls({ manifestLoadingMaxRetry: 10, levelLoadingMaxRetry: 10, fragLoadingMaxRetry: 10 });
+let channels = [], curIdx = 0, uiTimer = null, statsInterval = null;
+let frameCount = 0, fps = 0, lastTs = 0;
+
+// ── FPS ─────────────────────────────────────────────────────
+(function fpsLoop() {
+    if (!v.paused) {
+        frameCount++;
+        const now = performance.now();
+        if (now - lastTs >= 1000) { fps = frameCount; frameCount = 0; lastTs = now; }
+    }
+    requestAnimationFrame(fpsLoop);
+})();
+
+function updateStats() {
+    const level = hls.levels?.[hls.currentLevel] || {};
+    const mbps  = level.bitrate ? (level.bitrate / 1e6).toFixed(1) + ' Mbps' : 'Auto';
+    const res   = v.videoWidth ? `${v.videoWidth}×${v.videoHeight}` : '—';
+    statsEl.innerText = `${res} | ${mbps} | ${fps} fps`;
+}
+
+// ── HLS ─────────────────────────────────────────────────────
+hls.on(Hls.Events.ERROR, (_, d) => {
+    if (!d.fatal) return;
+    if (d.type === Hls.ErrorTypes.NETWORK_ERROR) hls.startLoad();
+    else if (d.type === Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError();
+});
+
+// ── Play ────────────────────────────────────────────────────
+function playChannel(idx) {
+    if (idx < 0 || idx >= channels.length) return;
+    curIdx = idx;
+    const c = channels[idx];
+    loader.style.display = 'block';
+
+    document.querySelectorAll('.side-item').forEach(el => el.classList.remove('active'));
+    const activeEl = sidebar.children[idx];
+    if (activeEl) { activeEl.classList.add('active'); activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+
+    if (Hls.isSupported()) {
+        hls.detachMedia(); hls.loadSource(c.url); hls.attachMedia(v);
+        hls.once(Hls.Events.MANIFEST_PARSED, () => {
+            v.muted = false;
+            v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
+        });
+    } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
+        v.src = c.url;
+        v.muted = false;
+        v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
+    }
+}
+
+v.addEventListener('playing', () => loader.style.display = 'none');
+
+// ── UI ──────────────────────────────────────────────────────
+function showUI() {
+    overlay.classList.add('active');
+    setFocus(curIdx);
+    updateStats();
+    if (!statsInterval) statsInterval = setInterval(updateStats, 1000);
+    resetHideTimer();
+}
+
+function hideUI() {
+    overlay.classList.remove('active');
+    clearFocus();
+    clearTimeout(uiTimer);
+    clearInterval(statsInterval); statsInterval = null;
+}
+
+function resetHideTimer() {
+    clearTimeout(uiTimer);
+    uiTimer = setTimeout(hideUI, 2000);
+}
+
+function setFocus(idx) {
+    document.querySelectorAll('.side-item').forEach(el => el.classList.remove('focused'));
+    const el = sidebar.children[idx];
+    if (el) { el.classList.add('focused'); el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+}
+function clearFocus() { document.querySelectorAll('.side-item').forEach(el => el.classList.remove('focused')); }
+
+// ── Touch / click ───────────────────────────────────────────
+app.addEventListener('click', (e) => {
+    if (sidebar.contains(e.target)) return;
+    overlay.classList.contains('active') ? hideUI() : showUI();
+});
+
+// ── Fullscreen ──────────────────────────────────────────────
+function tryFullscreen() {
+    const el = document.documentElement;
+    if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    if (screen.orientation?.lock) screen.orientation.lock('landscape').catch(() => {});
+}
+
+// ── D-pad ───────────────────────────────────────────────────
+document.addEventListener('keydown', (e) => {
+    const K = { UP:38, DOWN:40, LEFT:37, RIGHT:39, OK:13, OK2:23, BACK:8, MENU:18 };
+    if (e.keyCode === K.BACK || e.keyCode === K.MENU) {
+        e.preventDefault();
+        overlay.classList.contains('active') ? hideUI() : showUI();
+        return;
+    }
+    if (!overlay.classList.contains('active')) { e.preventDefault(); showUI(); return; }
+    resetHideTimer();
+    const n = channels.length;
+    if (e.keyCode === K.DOWN)  { e.preventDefault(); curIdx = (curIdx+1)%n; setFocus(curIdx); }
+    else if (e.keyCode === K.UP) { e.preventDefault(); curIdx = (curIdx-1+n)%n; setFocus(curIdx); }
+    else if ([K.OK, K.OK2, K.RIGHT].includes(e.keyCode)) { e.preventDefault(); playChannel(curIdx); hideUI(); }
+    else if (e.keyCode === K.LEFT) { e.preventDefault(); hideUI(); }
+});
+
+// ── Init ────────────────────────────────────────────────────
+async function init() {
+    try {
+        const res  = await fetch('playlist.json');
+        const data = await res.json();
+        let raw = Object.values(data).flat();
+
+        const thvl1 = raw.find(c => c.short === 'THVL1');
+        channels = thvl1 ? [thvl1, ...raw.filter(c => c.short !== 'THVL1')] : raw;
+
+        channels.forEach((c, i) => {
+            const el = document.createElement('div');
+            el.className = 'side-item';
+            el.setAttribute('data-url', c.url);
+            el.innerHTML = `<img src="${c.logo}" loading="lazy" title="${c.name}">`;
+            el.addEventListener('click', (e) => { e.stopPropagation(); playChannel(i); hideUI(); });
+            sidebar.appendChild(el);
+        });
+
+        const vtv1Idx = channels.findIndex(c => c.short === 'VTV1');
+        playChannel(vtv1Idx >= 0 ? vtv1Idx : 0);
+
+        tryFullscreen();
+        document.addEventListener('click', tryFullscreen, { once: true });
+
+    } catch (err) {
+        loader.style.display = 'block';
+        loader.innerText = 'LỖI DANH SÁCH';
+    }
+}
+
+init();
+</script>
+</body>
+</html>
