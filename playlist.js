@@ -1,3 +1,4 @@
+const playlistData =
 {
   "VTV": [
     { "name": "VTV1 HD", "short": "VTV1", "logo": "https://images.fptplay53.net/media/channels/icon_channel_vtv1-hd_165657381026.png?w=200&c=0&fmt=webp", "url": "https://live.fptplay53.net/fnxch2/vtv1hd_abr.smil/chunklist.m3u8" },
