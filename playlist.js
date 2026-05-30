@@ -17,11 +17,4 @@ const playlistData =
     { "name": "HTV1 HD", "short": "HTV1", "logo": "https://images.fptplay53.net/media/channels/icon_channel_htv1_165655706945.png?w=200&c=0&fmt=webp", "url": "https://live.fptplay53.net/epzhd1/htv1_hls.smil/chunklist.m3u8" },
     { "name": "HTV2 HD", "short": "HTV2", "logo": "https://images.fptplay53.net/media/channels/icon_channel_htv2_165657612334.png?w=200&c=0&fmt=webp", "url": "https://live.fptplay53.net/epzhd1/htv2hd_vhls.smil/chunklist.m3u8" },
     { "name": "HTV3 HD", "short": "HTV3", "logo": "https://images.fptplay53.net/media/channels/icon_channel_htv3_165655827991.png?w=200&c=0&fmt=webp", "url": "https://live.fptplay53.net/epzhd1/htv3_hls.smil/chunklist.m3u8" },
-    { "name": "Vietnam Today", "short": "VNT", "logo": "https://images.fptplay53.net/media/channels/OTT/2025/09/05/icon_channel_vietnam-today_175705565938.jpg?w=200&c=0&fmt=webp"
-#EXTVLCOPT:http-user-agent=Dalvik/2.1.0
-#KODIPROP:inputstream.adaptive.manifest_type=mpd
-#KODIPROP:inputstream.adaptive.license_type=clearkey
-#KODIPROP:inputstream.adaptive.license_key=47404f622db3536c867b2545581aadb4:9fbdc12cfe74564fd4329baa6a6d1968
-https://sgclient.duckdns.org/source/tv360.mpd?id=2554" }
-  ]
-}
+    { "name": "Vietnam Today", "short": "VNT", "logo": "https://images.fptplay53.net/media/channels/OTT/2025/09/05/icon_channel_vietnam-today_175705565938.jpg?w=200&c=0&fmt=webp", "url":"https://e3.endpoint.cdn.sctvonline.vn/hls/vtvcab16/index.m3u8"},
