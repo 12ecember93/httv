@@ -1,4 +1,4 @@
-#EXTM3U
+#EXTM3U url-tvg="https://vnepg.site/epg.xml"
 #EXTINF:-1 tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_thvl1_165657384745.png?w=200&c=0&fmt=webp",THVL1 HD
 https://live.fptplay53.net/epzhd2/vinhlong1_vhls.smil/chunklist_b5000000.m3u8
 #EXTINF:-1 tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_vtv1-hd_165657381026.png?w=200&c=0&fmt=webp",VTV1
