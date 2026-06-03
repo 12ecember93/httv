@@ -8,7 +8,7 @@ const playlistData =
     { "name": "VTV5 HD", "short": "VTV5", "logo": "https://images.fptplay53.net/media/channels/icon_channel_vtv5-hd_165657382858.png?w=200&c=0&fmt=webp", "url": "https://live-a.fptplay53.net/live/media/VTV5HD/live_hls_avc/index.m3u8" },
     { "name": "VTV7 HD", "short": "VTV7", "logo": "https://images.fptplay53.net/media/channels/icon_channel_vtv7-hd_165655773646.png?w=200&c=0&fmt=webp", "url": "https://live.fptplay53.net/fnxhd1/vtv7hd_vhls.smil/chunklist_b5000000.m3u8" },
     { "name": "VTV8 HD", "short": "VTV8", "logo": "https://images.fptplay53.net/media/channels/icon_channel_vtv8-hd_165657496167.png?w=200&c=0&fmt=webp", "url": "https://live.fptplay53.net/epzhd1/vtv8hd_vhls.smil/chunklist.m3u8" },
-    { "name": "VTV9 HD", "short": "VTV9", "logo": "https://images.fptplay53.net/media/channels/icon_channel_vtv9-hd_165657032671.png?w=200&c=0&fmt=webp", "url": "https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/vtv9-hd/KenhCoBan.m3u8" }
+    { "name": "VTV9 HD", "short": "VTV9", "logo": "https://images.fptplay53.net/media/channels/icon_channel_vtv9-hd_165657032671.png?w=200&c=0&fmt=webp", "url": "https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/vtv9-hd/KenhCoBan.m3u8" },
     { "name": "VTV10 HD", "short": "VTV10", "logo": "https://vtvgo-assets.vtvdigital.vn/assets/images/v2/channel/20260330/2026033009/1lmelwJ48A-VTV10-THUMBNAIL-KENH-VTVgo-480x270.webp", "url": "https://live.fptplay53.net/live/media/VTV_can_tho/live_hls_avc/index.m3u8" }
   ],
   "HTV & THVL": [
