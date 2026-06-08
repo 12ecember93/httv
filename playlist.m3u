@@ -44,26 +44,85 @@ https://live.fptplay53.net/epzhd1/htv2hd_vhls.smil/chunklist.m3u8
 #EXTINF:-1 tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_htv3_165655827991.png?w=200&c=0&fmt=webp",HTV3
 https://live.fptplay53.net/epzhd1/htv3_hls.smil/chunklist.m3u8
 
-#EXTINF:-1,TV360+1
-https://sgclient.duckdns.org/source/tv360.m3u8?id=2554
-#EXTINF:-1,TV360+2
-https://sgclient.duckdns.org/source/tv360.m3u8?id=1
-#EXTINF:-1,TV360+3
-https://sgclient.duckdns.org/source/tv360.m3u8?id=148
-#EXTINF:-1,TV360+4
-https://sgclient.duckdns.org/source/tv360.m3u8?id=2458
-#EXTINF:-1,TV360+5
-https://sgclient.duckdns.org/source/tv360.m3u8?id=9867
-#EXTINF:-1,TV360+6
-https://sgclient.duckdns.org/source/tv360.m3u8?id=9868
-#EXTINF:-1,TV360+9
-https://sgclient.duckdns.org/source/tv360.m3u8?id=9887
-#EXTINF:-1,TV360+10
-https://sgclient.duckdns.org/source/tv360.m3u8?id=9957
-#EXTINF:-1,TV360+11
-https://sgclient.duckdns.org/source/tv360.m3u8?id=9958
-#EXTINF:-1,TV360+12
-https://sgclient.duckdns.org/source/tv360.m3u8?id=10001
+#EXTINF:-1 tvg-id="tv360-1" group-title="TV360 Live" group-logo="https://toiyeuvietnam.dpdns.org/HoiQuanLogo/Images/HinhNhom.png" tvg-logo="https://toiyeuvietnam.dpdns.org/Logo/tv360-1/KenhCoBan.png",🗝️TV360+ 1
+#KODIPROP:inputstreamaddon=inputstream.adaptive
+#KODIPROP:inputstream.adaptive.manifest_type=dash
+#KODIPROP:inputstream.adaptive.license_type=clearkey
+#KODIPROP:inputstream.adaptive.license_key=https://hoiquan.dpdns.org/AutoKey/
+https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/tv360-1/KenhCoBan.m3u8
+#EXTINF:-1 tvg-id="tv360-10" group-title="TV360 Live" group-logo="https://toiyeuvietnam.dpdns.org/HoiQuanLogo/Images/HinhNhom.png" tvg-logo="https://toiyeuvietnam.dpdns.org/Logo/tv360-10/KenhCoBan.png",TV360+ 10
+https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/tv360-10/KenhCoBan.m3u8
+#EXTINF:-1 tvg-id="tv360-11" group-title="TV360 Live" group-logo="https://toiyeuvietnam.dpdns.org/HoiQuanLogo/Images/HinhNhom.png" tvg-logo="https://toiyeuvietnam.dpdns.org/Logo/tv360-11/KenhCoBan.png",TV360+ 11
+https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/tv360-11/KenhCoBan.m3u8
+#EXTINF:-1 tvg-id="tv360-12" group-title="TV360 Live" group-logo="https://toiyeuvietnam.dpdns.org/HoiQuanLogo/Images/HinhNhom.png" tvg-logo="https://toiyeuvietnam.dpdns.org/Logo/tv360-12/KenhCoBan.png",🗝️TV360+ 12
+#KODIPROP:inputstreamaddon=inputstream.adaptive
+#KODIPROP:inputstream.adaptive.manifest_type=dash
+#KODIPROP:inputstream.adaptive.license_type=clearkey
+#KODIPROP:inputstream.adaptive.license_key=https://hoiquan.dpdns.org/AutoKey/
+https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/tv360-12/KenhCoBan.m3u8
+#EXTINF:-1 tvg-id="tv360-13" group-title="TV360 Live" group-logo="https://toiyeuvietnam.dpdns.org/HoiQuanLogo/Images/HinhNhom.png" tvg-logo="https://toiyeuvietnam.dpdns.org/Logo/tv360-13/KenhCoBan.png",🗝️TV360+ 13
+#KODIPROP:inputstreamaddon=inputstream.adaptive
+#KODIPROP:inputstream.adaptive.manifest_type=dash
+#KODIPROP:inputstream.adaptive.license_type=clearkey
+#KODIPROP:inputstream.adaptive.license_key=https://hoiquan.dpdns.org/AutoKey/
+https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/tv360-13/KenhCoBan.m3u8
+#EXTINF:-1 tvg-id="tv360-14" group-title="TV360 Live" group-logo="https://toiyeuvietnam.dpdns.org/HoiQuanLogo/Images/HinhNhom.png" tvg-logo="https://toiyeuvietnam.dpdns.org/Logo/tv360-14/KenhCoBan.png",🗝️TV360+ 14
+#KODIPROP:inputstreamaddon=inputstream.adaptive
+#KODIPROP:inputstream.adaptive.manifest_type=dash
+#KODIPROP:inputstream.adaptive.license_type=clearkey
+#KODIPROP:inputstream.adaptive.license_key=https://hoiquan.dpdns.org/AutoKey/
+https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/tv360-14/KenhCoBan.m3u8
+#EXTINF:-1 tvg-id="tv360-15" group-title="TV360 Live" group-logo="https://toiyeuvietnam.dpdns.org/HoiQuanLogo/Images/HinhNhom.png" tvg-logo="https://toiyeuvietnam.dpdns.org/Logo/tv360-15/KenhCoBan.png",🗝️TV360+ 15
+#KODIPROP:inputstreamaddon=inputstream.adaptive
+#KODIPROP:inputstream.adaptive.manifest_type=dash
+#KODIPROP:inputstream.adaptive.license_type=clearkey
+#KODIPROP:inputstream.adaptive.license_key=https://hoiquan.dpdns.org/AutoKey/
+https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/tv360-15/KenhCoBan.m3u8
+#EXTINF:-1 tvg-id="tv360-2" group-title="TV360 Live" group-logo="https://toiyeuvietnam.dpdns.org/HoiQuanLogo/Images/HinhNhom.png" tvg-logo="https://toiyeuvietnam.dpdns.org/Logo/tv360-2/KenhCoBan.png",🗝️TV360+ 2
+#KODIPROP:inputstreamaddon=inputstream.adaptive
+#KODIPROP:inputstream.adaptive.manifest_type=dash
+#KODIPROP:inputstream.adaptive.license_type=clearkey
+#KODIPROP:inputstream.adaptive.license_key=https://hoiquan.dpdns.org/AutoKey/
+https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/tv360-2/KenhCoBan.m3u8
+#EXTINF:-1 tvg-id="tv360-3" group-title="TV360 Live" group-logo="https://toiyeuvietnam.dpdns.org/HoiQuanLogo/Images/HinhNhom.png" tvg-logo="https://toiyeuvietnam.dpdns.org/Logo/tv360-3/KenhCoBan.png",🗝️TV360+ 3
+#KODIPROP:inputstreamaddon=inputstream.adaptive
+#KODIPROP:inputstream.adaptive.manifest_type=dash
+#KODIPROP:inputstream.adaptive.license_type=clearkey
+#KODIPROP:inputstream.adaptive.license_key=https://hoiquan.dpdns.org/AutoKey/
+https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/tv360-3/KenhCoBan.m3u8
+#EXTINF:-1 tvg-id="tv360-4" group-title="TV360 Live" group-logo="https://toiyeuvietnam.dpdns.org/HoiQuanLogo/Images/HinhNhom.png" tvg-logo="https://toiyeuvietnam.dpdns.org/Logo/tv360-4/KenhCoBan.png",🗝️TV360+ 4
+#KODIPROP:inputstreamaddon=inputstream.adaptive
+#KODIPROP:inputstream.adaptive.manifest_type=dash
+#KODIPROP:inputstream.adaptive.license_type=clearkey
+#KODIPROP:inputstream.adaptive.license_key=https://hoiquan.dpdns.org/AutoKey/
+https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/tv360-4/KenhCoBan.m3u8
+#EXTINF:-1 tvg-id="tv360-5" group-title="TV360 Live" group-logo="https://toiyeuvietnam.dpdns.org/HoiQuanLogo/Images/HinhNhom.png" tvg-logo="https://toiyeuvietnam.dpdns.org/Logo/tv360-5/KenhCoBan.png",🗝️TV360+ 5
+#KODIPROP:inputstreamaddon=inputstream.adaptive
+#KODIPROP:inputstream.adaptive.manifest_type=dash
+#KODIPROP:inputstream.adaptive.license_type=clearkey
+#KODIPROP:inputstream.adaptive.license_key=https://hoiquan.dpdns.org/AutoKey/
+https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/tv360-5/KenhCoBan.m3u8
+#EXTINF:-1 tvg-id="tv360-6" group-title="TV360 Live" group-logo="https://toiyeuvietnam.dpdns.org/HoiQuanLogo/Images/HinhNhom.png" tvg-logo="https://toiyeuvietnam.dpdns.org/Logo/tv360-6/KenhCoBan.png",🗝️TV360+ 6
+#KODIPROP:inputstreamaddon=inputstream.adaptive
+#KODIPROP:inputstream.adaptive.manifest_type=dash
+#KODIPROP:inputstream.adaptive.license_type=clearkey
+#KODIPROP:inputstream.adaptive.license_key=https://hoiquan.dpdns.org/AutoKey/
+https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/tv360-6/KenhCoBan.m3u8
+#EXTINF:-1 tvg-id="tv360-7" group-title="TV360 Live" group-logo="https://toiyeuvietnam.dpdns.org/HoiQuanLogo/Images/HinhNhom.png" tvg-logo="https://toiyeuvietnam.dpdns.org/Logo/tv360-7/KenhCoBan.png",🗝️TV360+ 7
+#KODIPROP:inputstreamaddon=inputstream.adaptive
+#KODIPROP:inputstream.adaptive.manifest_type=dash
+#KODIPROP:inputstream.adaptive.license_type=clearkey
+#KODIPROP:inputstream.adaptive.license_key=https://hoiquan.dpdns.org/AutoKey/
+https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/tv360-7/KenhCoBan.m3u8
+#EXTINF:-1 tvg-id="tv360-8" group-title="TV360 Live" group-logo="https://toiyeuvietnam.dpdns.org/HoiQuanLogo/Images/HinhNhom.png" tvg-logo="https://toiyeuvietnam.dpdns.org/Logo/tv360-8/KenhCoBan.png",🗝️TV360+ 8
+#KODIPROP:inputstreamaddon=inputstream.adaptive
+#KODIPROP:inputstream.adaptive.manifest_type=dash
+#KODIPROP:inputstream.adaptive.license_type=clearkey
+#KODIPROP:inputstream.adaptive.license_key=https://hoiquan.dpdns.org/AutoKey/
+https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/tv360-8/KenhCoBan.m3u8
+#EXTINF:-1 tvg-id="tv360-9" group-title="TV360 Live" group-logo="https://toiyeuvietnam.dpdns.org/HoiQuanLogo/Images/HinhNhom.png" tvg-logo="https://toiyeuvietnam.dpdns.org/Logo/tv360-9/KenhCoBan.png",TV360+ 9
+https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/tv360-9/KenhCoBan.m3u8
+
 #EXTINF:-1,TNT Sports 1 4Mbps for 4G
 http://line.watchtivo-8k.com:80/play/live.php?mac=00:1A:79:3F:0C:96&stream=894977&extension=ts&play_token=W2HvDO5iES
 #EXTINF:-1,TNT Sports 2 4Mbps for 4G
