@@ -1,5 +1,5 @@
 #EXTM3U url-tvg="https://vnepg.site/epg.xml"
-#EXTINF:-1 tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_thvl1_165657384745.png?w=200&c=0&fmt=webp",THVL1 HD
+#EXTINF:-1 tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_thvl1_165657384745.png?w=200&c=0&fmt=webp",THVL1
 https://live.fptplay53.net/epzhd2/vinhlong1_vhls.smil/chunklist_b5000000.m3u8
 #EXTINF:-1 tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_vtv1-hd_165657381026.png?w=200&c=0&fmt=webp",VTV1
 https://live.fptplay53.net/fnxch2/vtv1hd_abr.smil/chunklist.m3u8
@@ -13,6 +13,8 @@ https://live.fptplay53.net/fnxch2/vtv4hd_abr.smil/chunklist.m3u8
 https://live-a.fptplay53.net/live/media/VTV5HD/live_hls_avc/index.m3u8
 #EXTINF:-1 tvg-logo="https://vtvgo-images.vtvdigital.vn/images/20230626/d96ee31b-eeef-4f4a-8245-0a9c0006bc46.jpg?width=500",VTV5 NB
 https://live.fptplay53.net/fnxhd1/vtv5tnb_vhls.smil/chunklist_b5000000.m3u8
+#EXTINF:-1 tvg-logo="https://vtvgo-assets.vtvdigital.vn/assets/images/v2/channel/20260607/2026060709/cWXXGTRTIZ-VTV6-THUMBNAIL-KENHVTVgo-500x281.webp",VTV6
+https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/vtv6-hd/KenhCoBan.m3u8
 #EXTINF:-1 tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_vtv7-hd_165655773646.png?w=200&c=0&fmt=webp",VTV7
 https://live.fptplay53.net/fnxhd1/vtv7hd_vhls.smil/chunklist_b5000000.m3u8
 #EXTINF:-1 tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_vtv8-hd_165657496167.png?w=200&c=0&fmt=webp",VTV8
@@ -30,6 +32,7 @@ https://live.fptplay53.net/epzch2/vinhlong1_abr.smil/chunklist_b4200000.m3u8
 https://toiyeuvietnam.dpdns.org/TuyetDoiKhongKinhDoanh/vtv1-hd/KenhCoBan.m3u8
 #EXTINF:-1 tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_vtv3-hd_165657381668.png?w=200&c=0&fmt=webp",VTV3 Dự Phòng
 https://live-a.fptplay53.net/live/media/VTV3HD/live_hls_avc/index.m3u8
+
 #EXTINF:-1 tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_htv7-hd_16565582880.png?w=200&c=0&fmt=webp",HTV7
 https://live.fptplay53.net/epzch2/htv7hd_abr.smil/chunklist.m3u8
 #EXTINF:-1 tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_htv9-hd_165655829886.png?w=200&c=0&fmt=webp",HTV9
