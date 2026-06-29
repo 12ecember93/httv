@@ -62,29 +62,28 @@ https://live.fptplay53.net/epzhd1/htv2hd_vhls.smil/chunklist.m3u8
 https://live.fptplay53.net/epzhd1/htv3_hls.smil/chunklist.m3u8
 
 #EXTM3U8
-#EXTINF:-1,VTV1 DP
+#EXTINF:-1 tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_vtv1-hd_165657381026.png?w=200&c=0&fmt=webp",VTV1 DP
 https://live.fptplay53.net/live/media/vtv1/live247-hls-avc/vtv1-avc1_5600000=10000-mp4a_131600=20000.m3u8
 
-#EXTINF:-1,VTV2 DP
+#EXTINF:-1 tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_vtv2-hd_16565576783.png?w=200&c=0&fmt=webp",VTV2 DP
 https://live.fptplay53.net/live/media/v2abr/live247-hls-avc/v2abr-avc1_5600000=10000-mp4a_131600=20000.m3u8
 
-#EXTINF:-1,VTV3 DP
+#EXTINF:-1 tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_vtv3-hd_165657381668.png?w=200&c=0&fmt=webp",VTV3 DP
 https://live.fptplay53.net/live/media/v3abr/live247-hls-avc/v3abr-avc1_5600000=10000-mp4a_131600=20000.m3u8
 
-#EXTINF:-1,VTV4 DP
+#EXTINF:-1 tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_vtv4-hd_165657382285.png?w=200&c=0&fmt=webp",VTV4 DP
 https://live.fptplay53.net/live/media/vtv4/live247-hls-avc/vtv4-avc1_5600000=10000-mp4a_131600=20000.m3u8
 
-
-#EXTINF:-1,VTV5 DP
+#EXTINF:-1 tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_vtv5-hd_165657382858.png?w=200&c=0&fmt=webp",VTV5 DP
 https://live.fptplay53.net/live/media/vtv5/live247-hls-avc/vtv5-avc1_5600000=10000-mp4a_131600=20000.m3u8
 
-#EXTINF:-1,VTV5 TÂY NAM BỘ DP
+#EXTINF:-1 tvg-logo="https://vtvgo-images.vtvdigital.vn/images/20230626/d96ee31b-eeef-4f4a-8245-0a9c0006bc46.jpg?width=500",VTV5TNB DP
 https://live.fptplay53.net/live/media/vtv5tnb/live-hls-avc/vtv5tnb-avc1_4000000=10000-mp4a_131600=20000.m3u8
 
-#EXTINF:-1,VTV6 DP
+#EXTINF:-1 tvg-logo="https://vtvgo-assets.vtvdigital.vn/assets/images/v2/channel/20260607/2026060709/cWXXGTRTIZ-VTV6-THUMBNAIL-KENHVTVgo-500x281.webp",VTV6 DP
 https://live.fptplay53.net/live/media/v6abr/live247-hls-avc/v6abr-avc1_5600000=10000-mp4a_131600=20000.m3u8
 
-#EXTINF:-1,VTV10 DP
+#EXTINF:-1 tvg-logo="https://vtvgo-assets.vtvdigital.vn/assets/images/v2/channel/20260330/2026033009/1lmelwJ48A-VTV10-THUMBNAIL-KENH-VTVgo-480x270.webp",VTV10 DP
 https://live.fptplay53.net/live/media/v10abr/live247-hls-avc/v10abr-avc1_5600000=10000-mp4a_131600=20000.m3u8
 
 
