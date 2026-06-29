@@ -25,5 +25,15 @@ const playlistData =
     { "name": "HTV2 HD", "short": "HTV2", "logo": "https://images.fptplay53.net/media/channels/icon_channel_htv2_165657612334.png?w=200&c=0&fmt=webp", "url": "https://live.fptplay53.net/epzhd1/htv2hd_vhls.smil/chunklist.m3u8" },
     { "name": "HTV3 HD", "short": "HTV3", "logo": "https://images.fptplay53.net/media/channels/icon_channel_htv3_165655827991.png?w=200&c=0&fmt=webp", "url": "https://live.fptplay53.net/epzhd1/htv3_hls.smil/chunklist.m3u8" },
     { "name": "Doraemon Movie", "short": "Doraemon", "logo": "https://file.hstatic.net/1000290074/article/thumbnail_blog_rabity_34600d7fb61a4ab888cae98c96b37b43_master.png", "url": "https://s6.kkphimplayer6.com/20250827/JfkCJsGc/3500kb/hls/index.m3u8" }
+  ],
+  "Dự phòng": [
+   { "name": "VTV1 DP", "short": "VTV1 DP", "logo": "https://images.fptplay53.net/media/channels/icon_channel_vtv1-hd_165657381026.png?w=200&c=0&fmt=webp", "url": "https://live.fptplay53.net/live/media/vtv1/live247-hls-avc/vtv1-avc1_5600000=10000-mp4a_131600=20000.m3u8" },
+   { "name": "VTV2 DP", "short": "VTV2 DP", "logo": "https://images.fptplay53.net/media/channels/icon_channel_vtv2-hd_16565576783.png?w=200&c=0&fmt=webp", "url": "https://live.fptplay53.net/live/media/v2abr/live247-hls-avc/v2abr-avc1_5600000=10000-mp4a_131600=20000.m3u8" },
+   { "name": "VTV3 DP", "short": "VTV3 DP", "logo": "https://images.fptplay53.net/media/channels/icon_channel_vtv3-hd_165657381668.png?w=200&c=0&fmt=webp", "url": "https://live.fptplay53.net/live/media/v3abr/live247-hls-avc/v3abr-avc1_5600000=10000-mp4a_131600=20000.m3u8" },
+   { "name": "VTV4 DP", "short": "VTV4 DP", "logo": "https://images.fptplay53.net/media/channels/icon_channel_vtv4-hd_165657382285.png?w=200&c=0&fmt=webp", "url": "https://live.fptplay53.net/live/media/vtv4/live247-hls-avc/vtv4-avc1_5600000=10000-mp4a_131600=20000.m3u8" },
+   { "name": "VTV5 DP", "short": "VTV5 DP", "logo": "https://images.fptplay53.net/media/channels/icon_channel_vtv5-hd_165657382858.png?w=200&c=0&fmt=webp", "url": "https://live.fptplay53.net/live/media/vtv5/live247-hls-avc/vtv5-avc1_5600000=10000-mp4a_131600=20000.m3u8" },
+   { "name": "VTV5TNB DP", "short": "VTV5TNB DP", "logo": "https://vtvgo-images.vtvdigital.vn/images/20230626/d96ee31b-eeef-4f4a-8245-0a9c0006bc46.jpg?width=500", "url": "https://live.fptplay53.net/live/media/vtv5tnb/live-hls-avc/vtv5tnb-avc1_4000000=10000-mp4a_131600=20000.m3u8" },
+   { "name": "VTV6 DP", "short": "VTV6 DP", "logo": "https://vtvgo-assets.vtvdigital.vn/assets/images/v2/channel/20260607/2026060709/cWXXGTRTIZ-VTV6-THUMBNAIL-KENHVTVgo-500x281.webp", "url": "https://live.fptplay53.net/live/media/v6abr/live247-hls-avc/v6abr-avc1_5600000=10000-mp4a_131600=20000.m3u8" },
+   { "name": "VTV10 DP", "short": "VTV10 DP", "logo": "https://vtvgo-assets.vtvdigital.vn/assets/images/v2/channel/20260330/2026033009/1lmelwJ48A-VTV10-THUMBNAIL-KENH-VTVgo-480x270.webp", "url": "https://live.fptplay53.net/live/media/v10abr/live247-hls-avc/v10abr-avc1_5600000=10000-mp4a_131600=20000.m3u8" }, 
   ]
 }
