@@ -40,13 +40,13 @@ https://live.fptplay53.net/fnxhd1/vtvcantho_vhls.smil/chunklist_b5000000.m3u8
 #EXTINF:-1 group-title="VTV" tvg-logo="https://images.fptplay53.net/media/channels/OTT/2025/09/05/icon_channel_vietnam-today_175705565938.jpg?w=200&c=0&fmt=webp",Vietnam Today
 https://live.fptplay53.net/fnxhd1/vntoday_vhls.smil/chunklist_b5000000.m3u8
 
-#EXTINF:-1 group-title="VTV" ,VTV Go Cảm Xúc
+#EXTINF:-1 group-title="VTV" TV" tvg-logo="https://vtvgo-assets.vtvdigital.vn/assets/images/v2/channel/20260613/2026061323/1bRxwtyuwY-BLCX_1_11zon.webp" ,WC Cảm xúc
 https://hoiquan.dpdns.org/VTVGo/?BinhLuanCamXuc
 
-#EXTINF:-1 group-title="VTV" ,Fifa
+#EXTINF:-1 group-title="VTV" tvg-logo="https://vtvgo-assets.vtvdigital.vn/assets/images/v2/channel/20260613/2026061323/JijjAecSCe-NGUYENBAN_8_11zon.webp" ,WC Nguyên bản
 https://hoiquan.dpdns.org/VTVGo/?WC-FiFa
 
-#EXTINF:-1 group-title="VTV" ,World Cup - Tiếng Anh
+#EXTINF:-1 group-title="VTV" tvg-logo="https://vtvgo-assets.vtvdigital.vn/assets/images/v2/channel/20260624/2026062413/nGAK2zjY1E-thumbnail_2.webp" ,World Cup - Tiếng Anh
 https://hoiquan.dpdns.org/VTVGo/?kenh-tieng-anh-1
 
 
