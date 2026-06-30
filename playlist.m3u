@@ -2,10 +2,10 @@
 #EXTM3U x-tvg-url="https://vnepg.site/epg.xml" tvg-shift=0 cache=500 deinterlace=1 aspect-ratio=16:9 m3uautoload=1"
 
 #EXTINF:-1 group-title="Others" tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_thvl1_165657384745.png?w=200&c=0&fmt=webp",THVL1
-https://live.fptplay53.net/epzhd2/vinhlong1_vhls.smil/chunklist_b5000000.m3u8"
+https://live.fptplay53.net/epzhd2/vinhlong1_vhls.smil/chunklist_b5000000.m3u8
 
 #EXTINF:-1 group-title="VTV" tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_vtv1-hd_165657381026.png?w=200&c=0&fmt=webp",VTV1
-https://live.fptplay53.net/fnxhd1/vtv1hd_vhls.smil/chunklist_b5000000.m3u8"
+https://live.fptplay53.net/fnxhd1/vtv1hd_vhls.smil/chunklist_b5000000.m3u8
 
 #EXTINF:-1 group-title="VTV" tvg-logo="https://images.fptplay53.net/media/channels/icon_channel_vtv2-hd_16565576783.png?w=200&c=0&fmt=webp",VTV2
 https://live.fptplay53.net/fnxhd1/vtv2hd_vhls.smil/chunklist_b5000000.m3u8"
