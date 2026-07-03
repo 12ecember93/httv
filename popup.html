@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { width: 380px; padding: 16px; font-family: system-ui; background: #1f1f1f; color: #fff; }
+    input { width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; border: none; margin-bottom: 12px; }
+    .ai { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+    button { width: 100%; padding: 12px; font-size: 16px; background: #10a37f; color: white; border: none; border-radius: 8px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <input type="text" id="query" placeholder="Nhập prompt..." autofocus>
+  
+  <div class="ai"><input type="checkbox" id="chatgpt" checked> ChatGPT</div>
+  <div class="ai"><input type="checkbox" id="gemini" checked> Gemini</div>
+  <div class="ai"><input type="checkbox" id="grok" checked> Grok</div>
+  <div class="ai"><input type="checkbox" id="perplexity" checked> Perplexity</div>
+
+  <button id="send">Gửi cho tất cả AI đang bật</button>
+
+  <script src="popup.js"></script>
+</body>
+</html>
