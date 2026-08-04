@@ -93,14 +93,12 @@ https://live.fptplay53.net/epzhd1/htv7hd_vhls.smil/chunklist_b5000000.m3u8"
 #EXTINF:-1 group-title="HTV DP" tvg-logo="https://img.hplus.com.vn/355x200/poster/2018/07/16/422430-665121-HTV9HD.png" ,HTV9 DP
 https://live.fptplay53.net/epzhd1/htv9hd_vhls.smil/chunklist_b5000000.m3u8"
 
-#EXTINF1 group-title="Others"  tvg-logo="https://imgvlive.vtvcab.vn/720X405/fd8acdaa-f6c8-4101-bb3b-660a83d9eaf4.jpg", ONSPORT1
+#EXTINF1 group-title="Others"  tvg-logo="https://imgvlive.vtvcab.vn/720X405/fd8acdaa-f6c8-4101-bb3b-660a83d9eaf4.jpg",ONSPORT1
 https://liveh12vng.vtvprime.vn/hls/ONSPORT1/04.m3u8
 #EXTINF:-1 group-title="Others"  tvg-logo="https://upload.wikimedia.org/wikipedia/en/b/b8/MUTV_logo.png" ,MUTV
 http://line.ciao-ott.net:80/play/live.php?mac=00:1A:79:C8:7B:30&stream=1312824&extension=ts&play_token=3ouilCRXf9
 #EXTINF:-1 group-title="Others" ,Bong Da Lau
 https://live05.meung.app/live/16226575.m3u8
-#EXTINF:-1 group-title="Others"  tvg-logo="https://file.hstatic.net/1000290074/article/thumbnail_blog_rabity_34600d7fb61a4ab888cae98c96b37b43_master.png" ,Doraemon Movie 44:
-https://s6.kkphimplayer6.com/20250827/JfkCJsGc/3500kb/hls/index.m3u8
 
 
 
