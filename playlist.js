@@ -1,9 +1,9 @@
 const playlistData =
 {
   "VTV": [
-    { "name": "VTV1", "short": "VTV1", "logo": "https://vtvgo-images.vtvdigital.vn/images/20230626/5de59236-89a2-4387-8664-f2fc27608093.jpg?width=500", "url": "https://vips-livecdn.fptplay.net/live/media/vtv1/live247-hls-avc/vtv1-avc1_5600000=10000-mp4a_131600=20000.m3u8" },
-    { "name": "VTV3", "short": "VTV3", "logo": "https://vtvgo-images.vtvdigital.vn/images/20230626/292a3f4e-c6ee-4858-9c49-f61dde69a854.jpg?width=500", "url": "https://vips-livecdn.fptplay.net/live/media/vtv3/live247-hls-avc/vtv3-avc1_5600000=10000-mp4a_131600=20000.m3u8" },
-    { "name": "VTV6", "short": "VTV6", "logo": "https://vtvgo-assets.vtvdigital.vn/assets/images/v2/channel/20260607/2026060709/cWXXGTRTIZ-VTV6-THUMBNAIL-KENHVTVgo-500x281.webp", "url": "https://vips-livecdn.fptplay.net/live/media/vtv6/live247-hls-avc/vtv6-avc1_5600000=10000-mp4a_140800_vie=20000.m3u8" },
+    { "name": "VTV1", "short": "VTV1", "logo": "https://vtvgo-images.vtvdigital.vn/images/20230626/5de59236-89a2-4387-8664-f2fc27608093.jpg?width=500", "url": "https://live.fptplay53.net/live/media/vtv1/live247-hls-avc/index.m3u8" },
+    { "name": "VTV3", "short": "VTV3", "logo": "https://vtvgo-images.vtvdigital.vn/images/20230626/292a3f4e-c6ee-4858-9c49-f61dde69a854.jpg?width=500", "url": "https://live.fptplay53.net/live/media/vtv3/live247-hls-avc/index.m3u8" },
+    { "name": "VTV6", "short": "VTV6", "logo": "https://vtvgo-assets.vtvdigital.vn/assets/images/v2/channel/20260607/2026060709/cWXXGTRTIZ-VTV6-THUMBNAIL-KENHVTVgo-500x281.webp", "url": "https://live.fptplay53.net/live/media/vtv7/live247-hls-avc/index.m3u8" },
     { "name": "VTV7", "short": "VTV7", "logo": "https://vtvgo-images.vtvdigital.vn/images/20230626/fe6f00dd-e418-44bf-9c0a-ae47cec1a67c.jpg?width=500", "url": "https://vips-livecdn.fptplay.net/live/media/vtv7/live247-hls-avc/vtv7-avc1_5600000=10000-mp4a_140800_vie=20000.m3u8" },
     { "name": "VTV8", "short": "VTV8", "logo": "https://vtvgo-images.vtvdigital.vn/images/20230626/447aba67-bee4-443a-ac5b-f6e457ff4abe.jpg?width=500", "url": "https://vips-livecdn.fptplay.net/live/media/vtv8/live-hls-avc/vtv8-avc1_4000000=10000-mp4a_131600=20000.m3u8" },
     { "name": "VTV9", "short": "VTV9", "logo": "https://vtvgo-images.vtvdigital.vn/images/20230626/7f951ab0-a128-44a9-84cd-ba8faf108ad3.jpg?width=500", "url": "https://vips-livecdn.fptplay.net/live/media/vtv9/live247-hls-avc/vtv9-avc1_5600000=10000-mp4a_131600=20000.m3u8" },
