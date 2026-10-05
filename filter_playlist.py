@@ -28,7 +28,7 @@ if current:
     blocks.append(current)
 
 wanted = re.compile(
-    r"^(VTV(?:[1-9]|10)|HTV(?:3|7|9)|THVL1|MUTV)$",
+    r"^(VTV(?:[1-9]|10)|HTV(?:3|7|9)|THVL1(?:\s*-.*)?|Vietnam Today|On Sports(?: \+)?(?: 50fps)?)$",
     re.IGNORECASE
 )
 fpt_group = re.compile(r'Sự Kiện FPT PLAY', re.IGNORECASE)
