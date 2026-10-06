@@ -6,6 +6,7 @@
     <title>XEM TV</title>
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/12ecember93/httv/main/httv.png">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
     <script src="playlist.js"></script>
 
     <style>
@@ -103,6 +104,7 @@ const statsEl = document.getElementById('stats');
 const app     = document.getElementById('app');
 
 let hls = new Hls({ manifestLoadingMaxRetry: 10, levelLoadingMaxRetry: 10, fragLoadingMaxRetry: 10 });
+let dash = null;
 let channels = [], curIdx = 0, uiTimer = null, statsInterval = null;
 let frameCount = 0, fps = 0, lastTs = 0;
 
@@ -152,6 +154,17 @@ hls.on(Hls.Events.ERROR, (_, d) => {
 });
 
 // ── Play ────────────────────────────────────────────────────
+function stopPlayers() {
+    try { hls.stopLoad(); } catch (_) {}
+    try { hls.detachMedia(); } catch (_) {}
+    if (dash) {
+        try { dash.reset(); } catch (_) {}
+        dash = null;
+    }
+    v.removeAttribute('src');
+    v.load();
+}
+
 function playChannel(idx) {
     if (idx < 0 || idx >= channels.length) return;
     curIdx = idx;
@@ -160,21 +173,59 @@ function playChannel(idx) {
 
     document.querySelectorAll('.side-item').forEach(el => el.classList.remove('active'));
     const activeEl = sidebar.children[idx];
-    if (activeEl) { activeEl.classList.add('active'); activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
-
-    // Nhận diện môi trường di động để xử lý Autoplay tránh bị kẹt luồng hình ảnh
-    const isMobileBrowser = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.location.href.includes('file:///');
-    v.muted = isMobileBrowser; // Nếu chạy web trên đth thì câm tạm thời để qua mặt bảo mật, Android App/TV mở tiếng luôn
-
-    if (Hls.isSupported()) {
-        hls.detachMedia(); hls.loadSource(c.url); hls.attachMedia(v);
-        hls.once(Hls.Events.MANIFEST_PARSED, () => {
-            v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
-        });
-    } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
-        v.src = c.url;
-        v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
+    if (activeEl) {
+        activeEl.classList.add('active');
+        activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
+
+    const isMobileBrowser = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) &&
+        !window.location.href.includes('file:///');
+    v.muted = isMobileBrowser;
+
+    stopPlayers();
+
+    const url = String(c.url || '').trim().toLowerCase();
+
+    if (url.includes('.m3u8')) {
+        if (Hls.isSupported()) {
+            hls.loadSource(c.url);
+            hls.attachMedia(v);
+            hls.once(Hls.Events.MANIFEST_PARSED, () => {
+                v.play().catch(() => {
+                    v.muted = true;
+                    v.play().catch(() => {});
+                });
+            });
+        } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
+            v.src = c.url;
+            v.play().catch(() => {
+                v.muted = true;
+                v.play().catch(() => {});
+            });
+        } else {
+            loader.innerText = 'TRÌNH DUYỆT KHÔNG HỖ TRỢ HLS';
+        }
+        return;
+    }
+
+    if (url.includes('.mpd') || url.includes('/tv360/')) {
+        if (window.dashjs) {
+            dash = dashjs.MediaPlayer().create();
+            dash.initialize(v, c.url, true);
+            dash.on(dashjs.MediaPlayer.events.ERROR, () => {
+                loader.innerText = 'KHÔNG PHÁT ĐƯỢC LUỒNG DASH';
+            });
+        } else {
+            loader.innerText = 'KHÔNG TẢI ĐƯỢC DASH PLAYER';
+        }
+        return;
+    }
+
+    v.src = c.url;
+    v.play().catch(() => {
+        v.muted = true;
+        v.play().catch(() => {});
+    });
 }
 
 v.addEventListener('playing', () => loader.style.display = 'none');
