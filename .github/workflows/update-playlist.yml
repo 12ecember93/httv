@@ -8,6 +8,7 @@ on:
     paths:
       - ".github/workflows/update-playlist.yml"
       - "filter_playlist.py"
+      - "update_playlist_js.py"
 
 permissions:
   contents: write
@@ -22,14 +23,17 @@ jobs:
       - name: Generate playlist
         run: python filter_playlist.py
 
-      - name: Commit playlist if changed
+      - name: Sync TV360 and FPT in playlist.js
+        run: python update_playlist_js.py
+
+      - name: Commit playlist files if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add playlist.m3u
+          git add playlist.m3u playlist.js
           if git diff --cached --quiet; then
             echo "No playlist changes."
             exit 0
           fi
-          git commit -m "chore: update IPTV playlist"
+          git commit -m "chore: update IPTV playlists"
           git push
