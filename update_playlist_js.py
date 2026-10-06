@@ -9,6 +9,7 @@ js = JS.read_text(encoding="utf-8")
 
 blocks = re.split(r"(?=^#EXTINF:)", text, flags=re.MULTILINE)
 source = {}
+fpt_index = 0
 
 for block in blocks:
     if not block.startswith("#EXTINF:"):
@@ -29,34 +30,49 @@ for block in blocks:
             continue
 
         logo = re.search(r'tvg-logo="([^"]*)"', extinf, re.IGNORECASE)
+
+        if "Sự Kiện FPT PLAY" in group_name:
+            fpt_index += 1
+            short = f"FPT{fpt_index}"
+        else:
+            short = name
+
         source[name] = {
             "url": urls[-1],
             "logo": logo.group(1) if logo else "",
-            "short": f"FPT{len(source) + 1}" if "FPT" in group_name else name,
+            "short": short,
         }
 
-# Split only the Others array. Everything else, especially VTV, stays byte-for-byte unchanged.
-others_match = re.search(r'("Others"\\s*:\\s*\\[)(.*?)(\\n\\s*\\])', js, re.DOTALL)
+# Only rebuild Others. VTV and every non-TV360/FPT entry remain unchanged.
+others_match = re.search(r'("Others"\s*:\s*\[)(.*?)(\n\s*\])', js, re.DOTALL)
 if not others_match:
     raise RuntimeError("Could not locate Others array in playlist.js.")
 
-prefix, body, suffix = others_match.groups()
+body = others_match.group(2)
 
 entry_re = re.compile(
-    r'\\s*\\{\\s*"name":\\s*"([^"]*)",\\s*"short":\\s*"([^"]*)",'
-    r'\\s*"logo":\\s*"([^"]*)",\\s*"url":\\s*"([^"]*)"\\s*\\},?'
+    r'\s*\{\s*"name":\s*"([^"]*)",\s*"short":\s*"([^"]*)",'
+    r'\s*"logo":\s*"([^"]*)",\s*"url":\s*"([^"]*)"\s*\},?'
 )
 
-entries = []
-for m in entry_re.finditer(body):
-    entries.append({
+entries = [
+    {
         "name": m.group(1),
         "short": m.group(2),
         "logo": m.group(3),
         "url": m.group(4),
-    })
+    }
+    for m in entry_re.finditer(body)
+]
 
-target = lambda name: name.startswith("TV360+") or name == "TV360 Promo" or name.startswith("Sự Kiện FPT") or name.startswith("Event ") or name.startswith("Sự Kiện ")
+def is_target(name):
+    return (
+        name.startswith("TV360+")
+        or name == "TV360 Promo"
+        or name.startswith("Sự Kiện FPT")
+        or name.startswith("Event ")
+        or name.startswith("Sự Kiện ")
+    )
 
 result = []
 used = set()
@@ -64,7 +80,7 @@ used = set()
 for entry in entries:
     name = entry["name"]
 
-    if not target(name):
+    if not is_target(name):
         result.append(entry)
         continue
 
@@ -72,17 +88,16 @@ for entry in entries:
         entry["url"] = source[name]["url"]
         used.add(name)
         result.append(entry)
+    # Old TV360/FPT entries that disappeared from playlist.m3u are removed.
 
-# Add newly appeared TV360/FPT entries from playlist.m3u.
 for name, item in source.items():
-    if name in used:
-        continue
-    result.append({
-        "name": name,
-        "short": item["short"],
-        "logo": item["logo"],
-        "url": item["url"],
-    })
+    if name not in used:
+        result.append({
+            "name": name,
+            "short": item["short"],
+            "logo": item["logo"],
+            "url": item["url"],
+        })
 
 def render(e):
     return (
@@ -90,8 +105,8 @@ def render(e):
         f'"logo": "{e["logo"]}", "url": "{e["url"]}" }}'
     )
 
-new_body = ",\\n".join(render(e) for e in result)
-new_js = js[:others_match.start(2)] + "\\n" + new_body + js[others_match.end(2):]
+new_body = ",\n".join(render(e) for e in result)
+new_js = js[:others_match.start(2)] + "\n" + new_body + js[others_match.end(2):]
 JS.write_text(new_js, encoding="utf-8")
 
 print(f"Synced {len(source)} TV360/FPT entries in playlist.js.")
