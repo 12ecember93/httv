@@ -69,19 +69,9 @@ const playlistData =
     }
   ],
   "FPT": [
-    {
-      "name": "THVL1",
-      "short": "THVL1",
-      "logo": "https://raw.githubusercontent.com/vuminhthanh12/vuminhthanh12/refs/heads/main/THVL1.webp",
-      "url": "https://live.fptplay53.net/live/media/vinhlong1/live247-hls-avc/vinhlong1-avc1_3800000=10000-mp4a_131600=20000.m3u8"
-    }
+    { "name": "THVL1", "short": "THVL1", "logo": "https://raw.githubusercontent.com/vuminhthanh12/vuminhthanh12/refs/heads/main/THVL1.webp", "url": "https://live.fptplay53.net/live/media/vinhlong1/live247-hls-avc/vinhlong1-avc1_3800000=10000-mp4a_131600=20000.m3u8" }
   ],
   "TV360": [
-    {
-      "name": "TV360+10",
-      "short": "TV360+10",
-      "logo": "https://img-ali1.tv360.vn/image1/2025/09/30/16/1759223393533/4ff09f8a4b49_640_360.png",
-      "url": "https://vmttv.dpdns.org/tv360/?id=tv360-10"
-    }
+    { "name": "TV360+10", "short": "TV360+10", "logo": "https://img-ali1.tv360.vn/image1/2025/09/30/16/1759223393533/4ff09f8a4b49_640_360.png", "url": "https://vmttv.dpdns.org/tv360/?id=tv360-10" }
   ]
 };
