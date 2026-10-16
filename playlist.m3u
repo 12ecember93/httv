@@ -84,29 +84,29 @@ https://vmttv.dpdns.org/tv360/?id=tv360-15
 #EXTVLCOPT:http-user-agent=Dalvik/2.1.0
 https://freem3u.xyz/api/live/play.m3u8?vid=9904
 #EXTINF:-1 tvg-id="fptplayttgt" group-title="Sự Kiện FPT PLAY" tvg-logo="https://images.fptplay53.net/media/channels/OTT_ECS/2026/09/22/fill-bg-logo-410x230_1790071429252.jpg", FPT PLAY CHUỖI THỂ THAO - GIẢI TRÍ
-https://vips-livecdn.fptplay.net/live/media/fptplay/live247-hls-avc/fptplay-avc1_5600000=10000-mp4a_131600=20000.m3u8?sign=1792079103-MDc1OTczMzQ-0-5709f7d9a226b1d901e3a4b0367f26cd
+https://vips-livecdn.fptplay.net/live/media/fptplay/live247-hls-avc/fptplay-avc1_1800000=10002-mp4a_131600=20000.m3u8?sign=1792108793-MDc1OTczMzQ-0-c269078186f0bd6eabab488dd7b5cd36
 #EXTINF:-1 tvg-id="vtv1hd" group-title="VTV" tvg-logo="https://r2.epg.io.vn/2026-09-17/1.png", VTV1
-https://live-a.fptplay53.net/live/media/vtv1/live247-hls-avc/index.m3u8?sign=1792070865-MA-0-49f87e97b9d8564bf2a82ed5a680245e
+https://freem3u.xyz/api/live/play.m3u8?vid=2
 #EXTINF:-1 tvg-id="vtv2hd" group-title="VTV" tvg-logo="https://r2.epg.io.vn/2026-09-17/2.png", VTV2
-https://vips-livecdn.fptplay.net/live/media/vtv2/live247-hls-avc/vtv2-avc1_5600000=10000-mp4a_140800_vie=20000.m3u8?sign=1792075000-MDc1OTczMzQ-0-8dbbbcdbb17a23a0f2192ae2b39c05f3
+https://vmttv.dpdns.org/tv360/?id=vtv2
 #EXTINF:-1 tvg-id="vtv3hd" group-title="VTV" tvg-logo="https://r2.epg.io.vn/2026-09-17/3.png", VTV3
-https://live-a.fptplay53.net/live/media/vtv3/live247-hls-avc/vtv3-avc1_5600000=10000-mp4a_140800_vie=20000.m3u8?sign=1792078836-MDc1OTczMzQ-0-8cfe2e790e0ef970c5ea168e9c0c0477
+https://vmttv.dpdns.org/tv360/?id=vtv3
 #EXTINF:-1 tvg-id="vtv4hd" group-title="VTV" tvg-logo="https://r2.epg.io.vn/2026-09-17/4.png" , VTV4
-https://live-a.fptplay53.net/live/media/vtv4/live247-hls-avc/vtv4-avc1_5600000=10000-mp4a_140800_vie=20000.m3u8?sign=1792080775-MDc1OTczMzQ-0-14d0a2c78a1ff1b4a0d7e87e81d83af1
+https://vmttv.dpdns.org/tv360/?id=vtv4
 #EXTINF:-1 tvg-id="vietnamtoday" group-title="VTV" tvg-logo="https://raw.githubusercontent.com/vuminhthanh12/vuminhthanh12/refs/heads/main/VietnamToday.jpg", Vietnam Today
-https://vips-livecdn.fptplay.net/live/media/vietnamtoday/live-hls-avc/vietnamtoday-avc1_4000000=10000-mp4a_140800_vie=20000.m3u8?sign=1792080947-MDc1OTczMzQ-0-5296ed45801e5d904307db15a6ec020f
+https://vmttv.dpdns.org/tv360/?id=vietnam-today-hd
 #EXTINF:-1 tvg-id="vtv5hd" group-title="VTV" tvg-logo="https://r2.epg.io.vn/2026-09-17/5.png" , VTV5
-https://vips-livecdn.fptplay.net/live/media/vtv5/live247-hls-avc/vtv5-avc1_5600000=10000-mp4a_140800_vie=20000.m3u8?sign=1792084848-MDc1OTczMzQ-0-de7696f0b733d6af36164851350a2167
+https://freem3u.xyz/api/live/play.m3u8?vid=110
 #EXTINF:-1 tvg-id="vtv6hd" group-title="VTV" tvg-logo="https://r2.epg.io.vn/2026-09-17/8.png", VTV6
-https://live-a.fptplay53.net/live/media/vtv6/live247-hls-avc/vtv6-avc1_5600000=10000-mp4a_140800_vie=20000.m3u8?sign=1792070486-MDc1OTczMzQ-0-d98e22b9f33377553db064f509614bef
+https://vmttv.dpdns.org/tv360/?id=vtv6
 #EXTINF:-1 tvg-id="vtv7hd" group-title="VTV" tvg-logo="https://r2.epg.io.vn/2026-09-17/9.png", VTV7
-
+https://vmttv.dpdns.org/tv360/?id=vtv7
 #EXTINF:-1 tvg-id="vtv8hd" group-title="VTV" tvg-logo="https://r2.epg.io.vn/2026-09-17/10.png" catchup="default" catchup-days="2", VTV8
-https://vips-livecdn.fptplay.net/live/media/vtv8/live-hls-avc/vtv8-avc1_4000000=10000-mp4a_131600=20000.m3u8
+https://vmttv.dpdns.org/tv360/?id=vtv8
 #EXTINF:-1 tvg-id="vtv9hd" group-title="VTV" tvg-logo="https://r2.epg.io.vn/2026-09-17/11.png", VTV9
-https://vips-livecdn.fptplay.net/live/media/vtv9/live247-hls-avc/vtv9-avc1_5600000=10000-mp4a_131600=20000.m3u8
+https://vmttv.dpdns.org/tv360/?id=vtv9
 #EXTINF:-1 tvg-id="vtv10hd" group-title="VTV" tvg-logo="https://r2.epg.io.vn/2026-09-17/12.png", VTV10
-https://vips-livecdn.fptplay.net/live/media/vtv10/live247-hls-avc/vtv10-avc1_5600000=10000-mp4a_131600=20000.m3u8
+https://vmttv.dpdns.org/tv360/?id=vtv10
 #EXTINF:-1 tvg-id="onsports" group-title="VTVcab" tvg-logo="https://r2.epg.io.vn/2026-09-17/16.png", On Sports 50fps
 #EXTVLCOPT:http-user-agent=Dalvik/2.1.0
 #KODIPROP:inputstream.adaptive.manifest_type=mpd
@@ -120,4 +120,4 @@ https://livevlisctcdnw.seenow.vn/Live_DASHDRM2/THETHAO_HD/manifest.mpd
 #KODIPROP:inputstream.adaptive.license_key=f3d73b3a9b89462ebf7911004ea3b3b9:2e547a81ff90aa02648cb9e3f79e7339
 https://livevliatmcdw.seenow.vn/live/data8/HAY_TV/Live_DASHDRM/HAY_TV.mpd
 #EXTINF:-1 tvg-id="vinhlong1hd" group-title="Địa phương" tvg-logo="https://raw.githubusercontent.com/vuminhthanh12/vuminhthanh12/refs/heads/main/THVL1.webp", THVL1 - Báo và PTTH Vĩnh Long
-https://vips-livecdn.fptplay.net/live/media/vinhlong1/live247-hls-avc/vinhlong1-avc1_3800000=10000-mp4a_131600=20000.m3u8
+https://freem3u.xyz/api/live/play.m3u8?vid=25
